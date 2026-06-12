@@ -105,7 +105,7 @@ def household_monthly_usage(household_id: str) -> list[HouseholdMonthlyUsageItem
                    mwr.average_daily_consumption_kL, mwr.reading_type,
                    ms.water_total_including_vat,
                    ms.current_charges_including_vat,
-                   ms.total_due, ms.invoice_number
+                   ms.total_due, ms.due_date, ms.invoice_number
             FROM monthly_water_readings mwr
             JOIN monthly_statements ms
               ON ms.household_id = mwr.household_id

@@ -55,3 +55,25 @@ http://localhost:3000/municipal/insights
 ```
 
 The Insights section shows deterministic water-usage patterns inferred dynamically from operational readings. Hidden ground-truth labels are not used. Insights identify accounts that may require municipal review, but they do not confirm leaks. Future AI agents may add explanations and richer recommendations on top of these baseline rules.
+
+## Open Household Portal
+
+```text
+http://localhost:3000/household
+```
+
+The household portal currently uses demo household selection rather than real authentication. Residents can select a household profile, view monthly municipal water usage, review the latest bill summary, and see resident-friendly usage insights. Daily meter-photo uploads are visible as a coming-soon workflow and will be added later.
+
+Resident meter-photo tracking is now available from each household dashboard:
+
+```text
+http://localhost:3000/household/{household_id}/meter-upload
+```
+
+Residents upload a recent water-meter photo, enter the visible reading manually, and confirm the value. The backend performs deterministic freshness, duplicate-image, and reading-plausibility checks. Municipal staff can review recent resident submissions at:
+
+```text
+http://localhost:3000/municipal/meter-submissions
+```
+
+AI extraction fields are reserved in the database for a later phase; OCR and external AI APIs are not used yet.

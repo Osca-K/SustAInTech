@@ -8,6 +8,7 @@ const items = [
   { label: "Statement Uploads", href: "/municipal/uploads", enabled: true },
   { label: "Households", href: "/municipal/households", enabled: true },
   { label: "Insights", href: "/municipal/insights", enabled: true },
+  { label: "Meter Submissions", href: "/municipal/meter-submissions", enabled: true },
   { label: "Settings", href: "#", enabled: false },
 ];
 
@@ -15,7 +16,7 @@ export function MunicipalSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="border-b border-slate-200 bg-white lg:min-h-screen lg:w-64 lg:border-b-0 lg:border-r">
+    <aside className="border-b border-slate-200 bg-white lg:flex lg:min-h-screen lg:w-64 lg:flex-col lg:border-b-0 lg:border-r">
       <div className="p-5">
         <p className="text-lg font-semibold text-slate-950">SustAInTech</p>
         <p className="text-sm text-slate-500">Municipal tools</p>
@@ -45,6 +46,14 @@ export function MunicipalSidebar() {
           ),
         )}
       </nav>
+      <div className="border-t border-slate-100 px-4 py-4 lg:mt-auto">
+        <Link
+          href="/household"
+          className="block rounded-md px-3 py-2 text-sm font-medium text-teal-700 hover:bg-teal-50"
+        >
+          Resident portal demo
+        </Link>
+      </div>
     </aside>
   );
 }

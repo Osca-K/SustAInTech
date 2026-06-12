@@ -68,6 +68,7 @@ class HouseholdMonthlyUsageItem(BaseModel):
     water_total_including_vat: float
     current_charges_including_vat: float
     total_due: float
+    due_date: str
     invoice_number: str
 
 
@@ -130,3 +131,54 @@ class InsightsSummary(BaseModel):
     medium_severity_count: int
     low_severity_count: int
     households_requiring_review: int
+
+
+class MeterSubmissionResult(BaseModel):
+    submission_id: str
+    household_id: str
+    meter_id: str
+    submitted_at: str
+    image_freshness_status: str
+    submitted_reading_kL: float
+    usage_since_previous_reading_kL: float | None
+    estimated_daily_usage_kL: float | None
+    reading_source: str
+    validation_status: str
+    validation_notes: list[str]
+    resident_confirmed: bool
+
+
+class MeterSubmissionHistoryItem(BaseModel):
+    submission_id: str
+    submitted_at: str
+    submitted_reading_kL: float
+    usage_since_previous_reading_kL: float | None
+    estimated_daily_usage_kL: float | None
+    image_freshness_status: str
+    validation_status: str
+    reading_source: str
+    resident_confirmed: bool
+
+
+class HouseholdTrackingSummary(BaseModel):
+    latest_reading_kL: float | None
+    latest_submission_at: str | None
+    usage_since_previous_reading_kL: float | None
+    estimated_daily_usage_kL: float | None
+    accepted_submission_count: int
+    review_required_count: int
+
+
+class MunicipalMeterSubmissionListItem(BaseModel):
+    submission_id: str
+    household_id: str
+    account_number: str
+    customer_name: str
+    physical_address: str
+    meter_number: str
+    submitted_at: str
+    submitted_reading_kL: float
+    usage_since_previous_reading_kL: float | None
+    estimated_daily_usage_kL: float | None
+    image_freshness_status: str
+    validation_status: str

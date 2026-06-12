@@ -68,6 +68,7 @@ export type HouseholdMonthlyUsageItem = {
   water_total_including_vat: number;
   current_charges_including_vat: number;
   total_due: number;
+  due_date: string;
   invoice_number: string;
 };
 
@@ -149,6 +150,64 @@ export type InsightsParams = {
   severity?: string;
   insight_type?: string;
   household_id?: string;
+};
+
+export type MeterSubmissionResult = {
+  submission_id: string;
+  household_id: string;
+  meter_id: string;
+  submitted_at: string;
+  image_freshness_status: string;
+  submitted_reading_kL: number;
+  usage_since_previous_reading_kL: number | null;
+  estimated_daily_usage_kL: number | null;
+  reading_source: string;
+  validation_status: string;
+  validation_notes: string[];
+  resident_confirmed: boolean;
+};
+
+export type MeterSubmissionHistoryItem = {
+  submission_id: string;
+  submitted_at: string;
+  submitted_reading_kL: number;
+  usage_since_previous_reading_kL: number | null;
+  estimated_daily_usage_kL: number | null;
+  image_freshness_status: string;
+  validation_status: string;
+  reading_source: string;
+  resident_confirmed: boolean;
+};
+
+export type HouseholdTrackingSummary = {
+  latest_reading_kL: number | null;
+  latest_submission_at: string | null;
+  usage_since_previous_reading_kL: number | null;
+  estimated_daily_usage_kL: number | null;
+  accepted_submission_count: number;
+  review_required_count: number;
+};
+
+export type MunicipalMeterSubmissionListItem = {
+  submission_id: string;
+  household_id: string;
+  account_number: string;
+  customer_name: string;
+  physical_address: string;
+  meter_number: string;
+  submitted_at: string;
+  submitted_reading_kL: number;
+  usage_since_previous_reading_kL: number | null;
+  estimated_daily_usage_kL: number | null;
+  image_freshness_status: string;
+  validation_status: string;
+};
+
+export type MunicipalMeterSubmissionsParams = {
+  validation_status?: string;
+  household_id?: string;
+  limit?: number;
+  offset?: number;
 };
 
 async function apiGet<T>(path: string): Promise<T> {
@@ -262,6 +321,59 @@ export function getHouseholdInsights(householdId: string) {
   return apiGet<WaterUsageInsightItem[]>(
     `/api/households/${householdId}/insights`,
   );
+}
+
+export async function submitHouseholdMeterReading(
+  householdId: string,
+  formData: FormData,
+): Promise<MeterSubmissionResult> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/households/${householdId}/meter-submissions`,
+    {
+      method: "POST",
+      body: formData,
+    },
+  );
+
+  if (!response.ok) {
+    const message = await readableError(response);
+    throw new Error(message || `Meter submission failed: ${response.status}`);
+  }
+
+  return response.json() as Promise<MeterSubmissionResult>;
+}
+
+export function getHouseholdMeterSubmissions(householdId: string) {
+  return apiGet<MeterSubmissionHistoryItem[]>(
+    `/api/households/${householdId}/meter-submissions`,
+  );
+}
+
+export function getHouseholdMeterTrackingSummary(householdId: string) {
+  return apiGet<HouseholdTrackingSummary>(
+    `/api/households/${householdId}/meter-tracking-summary`,
+  );
+}
+
+export function getMunicipalMeterSubmissions(
+  params: MunicipalMeterSubmissionsParams = {},
+) {
+  const query = new URLSearchParams();
+  if (params.validation_status) {
+    query.set("validation_status", params.validation_status);
+  }
+  if (params.household_id) {
+    query.set("household_id", params.household_id);
+  }
+  if (params.limit !== undefined) {
+    query.set("limit", String(params.limit));
+  }
+  if (params.offset !== undefined) {
+    query.set("offset", String(params.offset));
+  }
+
+  const suffix = query.toString() ? `?${query.toString()}` : "";
+  return apiGet<MunicipalMeterSubmissionListItem[]>(`/api/meter-submissions${suffix}`);
 }
 
 async function readableError(response: Response): Promise<string> {

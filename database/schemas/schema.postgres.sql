@@ -99,3 +99,33 @@ CREATE TABLE IF NOT EXISTS monthly_statements (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE (household_id, statement_month)
 );
+
+CREATE TABLE IF NOT EXISTS household_meter_submissions (
+  submission_id TEXT PRIMARY KEY,
+  household_id TEXT NOT NULL REFERENCES households(household_id),
+  meter_id TEXT NOT NULL REFERENCES water_meters(meter_id),
+  submitted_at TIMESTAMPTZ NOT NULL,
+  image_path TEXT NOT NULL,
+  image_original_filename TEXT NOT NULL,
+  image_content_type TEXT NOT NULL,
+  image_size_bytes INTEGER NOT NULL CHECK (image_size_bytes > 0),
+  image_hash_sha256 TEXT NOT NULL UNIQUE,
+  browser_last_modified_at TIMESTAMPTZ,
+  exif_datetime_original TIMESTAMPTZ,
+  image_age_minutes NUMERIC,
+  image_freshness_status TEXT NOT NULL CHECK (image_freshness_status IN ('recent', 'stale', 'metadata_missing', 'metadata_inconsistent')),
+  submitted_reading_kL NUMERIC NOT NULL CHECK (submitted_reading_kL >= 0),
+  usage_since_previous_reading_kL NUMERIC,
+  elapsed_hours_since_previous_reading NUMERIC,
+  estimated_daily_usage_kL NUMERIC,
+  reading_source TEXT NOT NULL CHECK (reading_source IN ('resident_manual', 'ai_extracted_resident_confirmed', 'ai_extracted_resident_corrected')),
+  validation_status TEXT NOT NULL CHECK (validation_status IN ('accepted', 'review_required', 'rejected', 'duplicate_image', 'retake_required')),
+  validation_notes_json JSONB NOT NULL,
+  resident_confirmed BOOLEAN NOT NULL,
+  resident_corrected_value NUMERIC,
+  ai_extracted_meter_number TEXT,
+  ai_extracted_reading_kL NUMERIC,
+  ai_confidence_score NUMERIC,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);

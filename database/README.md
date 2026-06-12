@@ -24,6 +24,16 @@ python database\scripts\import_ready_batch.py --batch-summary "ingestion\output\
 python database\scripts\inspect_database.py
 ```
 
+## Apply Meter-Submission Migration
+
+Existing local SQLite databases can be upgraded without resetting:
+
+```powershell
+python database\scripts\migrate_add_household_meter_submissions.py
+```
+
+The migration adds resident water-meter photo submissions, storing image paths and metadata only. Raw image bytes are not stored in SQLite.
+
 ## Run Tests
 
 ```powershell

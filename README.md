@@ -24,8 +24,14 @@ Current municipal frontend workflows include:
 - statement uploads with extraction, validation, deduplication, and database import;
 - household search, list view, profile details, meter details, monthly usage chart, and billing-history table.
 - municipal insights inferred dynamically from operational water readings to identify accounts requiring review.
+- household portal demo with resident profile selection, monthly water usage, latest bill summary, and resident-friendly usage insights.
+- household water meter-photo tracking with resident-confirmed readings, deterministic freshness checks, duplicate-image checks, and municipal submission review.
 
 Insights do not read hidden ground-truth labels and do not confirm leaks. They provide a deterministic baseline for future AI explanation agents.
+
+The household portal uses demo access for now. Real authentication will come later, and daily meter-photo uploads are planned as the next resident-facing workflow.
+
+Meter-photo tracking stores uploaded images on the filesystem and stores only image paths and metadata in SQLite. AI extraction fields are reserved for a later phase; OCR and external AI APIs are not used yet.
 
 ## Run Locally
 

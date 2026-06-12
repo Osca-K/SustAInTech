@@ -22,6 +22,10 @@ database/local/*.db
 *.sqlite
 *.sqlite3
 
+# Local meter-photo uploads
+storage/household-meter-uploads/*
+!storage/household-meter-uploads/.gitkeep
+
 # Ingestion runtime inputs and outputs
 ingestion/input/uploads/
 ingestion/input/batch_*/
