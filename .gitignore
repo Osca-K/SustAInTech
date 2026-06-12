@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Local databases
+database/local/*.db
+*.sqlite
+*.sqlite3
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# Operating-system and editor clutter
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Backend runtime clutter
+backend/.venv/
+backend/__pycache__/
+
+# Generated ingestion outputs
+ingestion/output/*.json
+ingestion/output/extracted/*.json
+ingestion/output/batches/*.json
+ingestion/output/processed_files_registry.json
+!ingestion/output/.gitkeep
+!ingestion/output/extracted/.gitkeep
+!ingestion/output/batches/.gitkeep
+
+# Optional local ingestion inputs
+ingestion/input/**/*.pdf
+
+# Generated statement outputs
+Generate Data/data/generated/*
+Generate Data/data/render_inputs/*.json
+Generate Data/data/evaluation/*.csv
+Generate Data/output/pdf/*.pdf
+Generate Data/output/pdf/*.png
+Generate Data/output/generated_tex/*
+!Generate Data/output/pdf/.gitkeep
+!Generate Data/output/generated_tex/.gitkeep

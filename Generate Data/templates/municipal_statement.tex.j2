@@ -1,0 +1,356 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage[scaled]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[T1]{fontenc}
+\usepackage[margin=10mm,includefoot]{geometry}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage[table]{xcolor}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{ragged2e}
+\usepackage{fancyhdr}
+
+\graphicspath{{../../assets/logos/}}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyfoot[C]{\scriptsize SYNTHETIC TRAINING DATA \textemdash{} Generated for testing, demonstration, and model-training purposes only. Not an official municipal statement. Not valid for payment or proof of address.}
+
+\definecolor{demoCream}{RGB}{250,246,238}
+\definecolor{demoTan}{RGB}{232,218,193}
+\definecolor{demoLine}{RGB}{184,104,39}
+\definecolor{demoInk}{RGB}{18,18,18}
+\setlength{\parindent}{0pt}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.04}
+\setlength{\arrayrulewidth}{0.35pt}
+\color{demoInk}
+
+\newcolumntype{L}{>{\RaggedRight\arraybackslash}X}
+\newcolumntype{R}{>{\RaggedLeft\arraybackslash}X}
+\newcolumntype{C}{>{\Centering\arraybackslash}X}
+\newcommand{\boxrule}{\arrayrulecolor{demoLine}}
+\newcommand{\resetline}{\arrayrulecolor{black}}
+\newcommand{\brown}[1]{\textcolor{demoLine}{#1}}
+\newcommand{\thinspacev}{\vspace{4pt}}
+\newcommand{\watermark}{%
+\begin{tikzpicture}[remember picture,overlay]
+  \node[rotate=35,scale=5.4,text=demoLine,text opacity=0.065] at (current page.center) {\textbf{SYNTHETIC TRAINING DATA}};
+\end{tikzpicture}%
+}
+\newcommand{\fakebarcode}{%
+\begin{minipage}{34mm}\centering
+\begin{tikzpicture}[x=0.36mm,y=0.48mm]
+  \foreach \x/\w in {0/1,2/2,5/1,7/3,12/1,15/2,18/1,21/3,26/2,30/1,33/2,37/3,42/1,45/2,49/1,52/3,57/2,61/1,64/3,70/1,73/2,77/1,80/3} {
+    \fill[black] (\x,0) rectangle ++(\w,12);
+  }
+  \draw[demoLine] (0,0) rectangle (85,12);
+\end{tikzpicture}\par
+{\tiny NOT VALID FOR PAYMENT}
+\end{minipage}%
+}
+\newcommand{\summaryline}[1]{#1\\}
+\newcommand{\servicebox}[6]{%
+\boxrule
+\begin{tabularx}{\linewidth}{|p{0.56\linewidth}|p{0.15\linewidth}|p{0.10\linewidth}|p{0.13\linewidth}|}
+\hline
+\rowcolor{demoCream}
+\textbf{#1}\newline\textbf{#2} & \brown{\textbf{VAT: #3}} & \textbf{Sub - Total} & \textbf{Total Amount}\\
+\hline
+#4 & #5 & #6\\
+\hline
+\end{tabularx}
+\resetline
+}
+
+\begin{document}
+\watermark
+
+\begin{minipage}[t]{0.43\linewidth}
+  \includegraphics[width=0.55\linewidth]{joburg_logo.png}\\[6pt]
+  {\scriptsize Computer Generated}\\[-1pt]
+  {\LARGE\textbf{TAX INVOICE}}\\[6pt]
+  {\large\textbf{<< data.customer.name|latex >>}}\\[3pt]
+  <% for line in data.customer.postal_address %>{\large << line|latex >>}\\[2pt]
+  <% endfor %>
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.50\linewidth}
+  \vspace{0mm}
+  {\small You can contact us in the following ways}\\[3pt]
+  {\scriptsize
+  \begin{tabularx}{\linewidth}{@{}p{0.06\linewidth}L p{0.06\linewidth}L@{}}
+    \brown{\textbullet} & Phone:\newline Tel: 0860 562 874\newline Fax: (011) 358-3408/9 &
+    \brown{\textbullet} & Correspondence:\newline P.O BOX 5000\newline JOHANNESBURG\newline 2000\\[6pt]
+    \brown{\textbullet} & E-mail:\newline joburgconnect@joburg.org.za & & \\
+  \end{tabularx}
+  }
+  \vspace{3pt}
+  {\tiny VAT NO: CITY OF JOHANNESBURG: 4760117194\hfill VAT NO: PIKITUP: 4790191292}\\
+  {\tiny VAT NO: JOHANNESBURG WATER: 4270191077\hfill VAT NO: CITY POWER: 4710191182}\\[4pt]
+  \boxrule
+  \begin{tabularx}{\linewidth}{|p{0.36\linewidth}|L|}
+  \hline
+  \rowcolor{demoTan}\textbf{Date} & << data.statement.date|latex >>\\
+  \hline
+  \rowcolor{demoTan}\textbf{Statement for} & << data.statement.period|latex >>\\
+  \hline
+  \rowcolor{demoTan}\textbf{Physical Address} & << data.customer.physical_address|latex >>\\
+  \hline
+  \rowcolor{demoTan}\textbf{Stand No./Portion} & << data.customer.stand_portion|latex >>\\
+  \hline
+  \rowcolor{demoTan}\textbf{Township} & << data.customer.township|latex >>\\
+  \hline
+  \end{tabularx}
+  \resetline
+\end{minipage}
+
+\vspace{4mm}
+\boxrule
+\begin{tabularx}{\linewidth}{|C|C|C|C|C|C|}
+\hline
+\rowcolor{demoTan}
+\textbf{Stand Size} & \textbf{Number of Dwellings} & \textbf{Date of Valuation} & \textbf{Portion} & \textbf{Municipal Valuation} & \textbf{Region}\\
+\hline
+<< data.property.stand_size|latex >> & << data.property.number_of_dwellings|latex >> & << data.property.date_of_valuation|latex >> & << data.property.portion|latex >> & << data.property.municipal_valuation|latex >> & << data.property.region|latex >>\\
+\hline
+\end{tabularx}
+\resetline
+
+\vspace{2pt}
+\boxrule
+\begin{tabularx}{\linewidth}{|L|L|}
+\hline
+Invoice Number: << data.statement.invoice_number|latex >> & Next Reading Date: << data.statement.next_reading_date|latex >>\\
+Client VAT Number: << data.statement.client_vat_number|latex >> & Deposit: << data.statement.deposit|latex >>\\
+\hline
+\end{tabularx}
+\resetline
+
+\vspace{2pt}
+\boxrule
+\begin{tabularx}{\linewidth}{|L|R|}
+\hline
+\rowcolor{demoTan}
+{\large\textbf{Account Number: << data.account.number|latex >>}} & {\large\textbf{PIN CODE: << data.account.pin|latex >>}}\\
+\hline
+\end{tabularx}
+\resetline
+
+\vspace{3pt}
+\begin{minipage}[t]{0.76\linewidth}
+  \begin{tabularx}{\linewidth}{@{}L@{}}
+  \summaryline{Previous Account Balance}
+  \summaryline{Less: Incoming Payment}
+  \summaryline{Sub Total}
+  \summaryline{Current Charges (Excl. VAT)}
+  \summaryline{VAT @ 15\%}
+  \end{tabularx}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.14\linewidth}
+  \boxrule
+  \begin{tabularx}{\linewidth}{|R|}
+  \hline
+  \rowcolor{demoTan}
+  << data.summary.previous_balance|latex >>\\[5pt]
+  << data.summary.incoming_payment|latex >>\\[5pt]
+  << data.summary.sub_total|latex >>\\[5pt]
+  << data.summary.current_charges_excl_vat|latex >>\\[5pt]
+  << data.summary.vat|latex >>\\[22pt]
+  \hline
+  \end{tabularx}
+  \resetline
+\end{minipage}
+
+\vspace{3mm}
+\begin{minipage}[t]{0.76\linewidth}
+\boxrule
+\begin{tabularx}{\linewidth}{|C|C|C|C|C|C|}
+\hline
+\textbf{90 DAYS+} & \textbf{60 DAYS} & \textbf{30 DAYS} & \textbf{CURRENT} & \textbf{INSTALLMENT PLAN} & \textbf{TOTAL OUTSTANDING}\\
+<< data.ageing['90_days_plus']|latex >> & << data.ageing['60_days']|latex >> & << data.ageing['30_days']|latex >> & << data.ageing.current|latex >> & << data.ageing.installment_plan|latex >> & << data.ageing.total_outstanding|latex >>\\
+\hline
+\end{tabularx}
+\resetline
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.21\linewidth}
+  \boxrule
+  \begin{tabularx}{\linewidth}{|p{0.43\linewidth}|R|}
+  \hline
+  \rowcolor{demoLine}\textcolor{white}{\textbf{Total Due}} & << data.summary.total_due|latex >>\\
+  \hline
+  \rowcolor{demoLine}\textcolor{white}{\textbf{Due Date}} & << data.statement.due_date|latex >>\\
+  \hline
+  \end{tabularx}
+  \resetline
+\end{minipage}
+
+\vspace{3mm}
+\boxrule
+\begin{tabularx}{\linewidth}{|L|}
+\hline
+\vspace{1pt}<< data.message|latex >>\vspace{2mm}\\
+\hline
+\end{tabularx}
+\resetline
+
+\enlargethispage{38mm}
+\vspace{1mm}
+\colorbox{demoCream}{%
+\begin{minipage}{\dimexpr\linewidth-2\fboxsep}
+\vspace{2pt}
+\begin{minipage}[t]{0.12\linewidth}
+  {\scriptsize City of Johannesburg}\\[2pt]
+  {\tiny Payment stub}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.28\linewidth}
+  {\normalsize Remittance Advice:}\\[1pt]
+  {\scriptsize This stub must accompany payment.}\\
+  {\scriptsize Please do not detach if paying at the post office.}\\[2pt]
+  \boxrule
+  \begin{tabularx}{\linewidth}{|p{0.39\linewidth}|L|}
+  \hline
+  \makebox[\linewidth][c]{\includegraphics[width=0.98\linewidth,height=9mm,keepaspectratio]{easypay_logo.png}} & {\scriptsize << data.payment.easypay_reference|latex >>}\\
+  \hline
+  \makebox[\linewidth][c]{\includegraphics[width=0.92\linewidth,height=8mm,keepaspectratio]{post_office_logo.png}} & {\scriptsize << data.payment.post_office_reference|latex >>}\\
+  \hline
+  \multicolumn{2}{|c|}{\fakebarcode}\\
+  \hline
+  \end{tabularx}
+  \resetline
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.56\linewidth}
+  \boxrule
+  \begin{tabularx}{\linewidth}{|L L|}
+  \hline
+  {\scriptsize Date: << data.statement.date|latex >>} & {\scriptsize << data.customer.name|latex >>}\\
+  {\scriptsize Acc. No.: << data.account.number|latex >>} & {\scriptsize << data.customer.physical_address|latex >>}\\
+  \hline
+  \end{tabularx}\\[-1pt]
+  \begin{tabularx}{\linewidth}{|L|}
+  \hline
+{\scriptsize\includegraphics[width=16mm,height=6.5mm,keepaspectratio]{standard_bank_logo.png}\quad City of Johannesburg Banking details:}\\
+  {\scriptsize Internet Banking - Use the bank's pre-loaded Company details}\\
+  {\scriptsize SBSA branch deposits - \textbf{CIN AA45} to be used in place of bank acc. nr.}\\
+  {\scriptsize Client Account No/Deposit Reference << data.payment.standard_bank_reference|latex >>}\\
+  \hline
+  \end{tabularx}\\[-1pt]
+  \begin{tabularx}{\linewidth}{|p{0.22\linewidth}|R|}
+  \hline
+  \rowcolor{demoLine}\textcolor{white}{\scriptsize Total Due:} & {\scriptsize << data.summary.total_due|latex >>}\\
+  \hline
+  \rowcolor{demoLine}\textcolor{white}{\scriptsize Due Date:} & {\scriptsize << data.statement.due_date|latex >>}\\
+  \hline
+  \end{tabularx}
+  \resetline
+\end{minipage}
+\vspace{2pt}
+\end{minipage}}
+
+\newpage
+\watermark
+
+\boxrule
+\begin{tabularx}{\linewidth}{|L|}
+\hline
+\rowcolor{demoTan}{\large\textbf{Account Number: << data.account.number|latex >>}}\\
+\hline
+\end{tabularx}
+\resetline
+
+\vspace{5mm}
+\boxrule
+\begin{tabularx}{\linewidth}{|p{0.56\linewidth}|p{0.17\linewidth}|R|R|}
+\hline
+\rowcolor{demoCream}
+\textbf{Johannesburg Water}\newline\textbf{Water \& Sanitation} & {\scriptsize\brown{\textbf{VAT: 4270191077}}} & \textbf{Sub - Total} & \textbf{Total Amount}\\
+\hline
+\begin{minipage}[t]{\linewidth}\small
+(Reading period = << data.water.reading_period|latex >>)\\
+Meter: << data.water.meter_number|latex >>; Register: << data.water.register|latex >>; Multiply factor: << data.water.multiply_factor|latex >>; Start reading: << data.water.start_reading|latex >>;\\
+End reading: << data.water.end_reading|latex >>; Difference: << data.water.difference|latex >>; Consumption: << data.water.consumption|latex >> << data.water.units|latex >>;\\
+Units: kL; Type: << data.water.reading_type|latex >>.\\
+Daily average consumption << data.water.average_daily_consumption|latex >>\\
+Charges for << data.water.consumption|latex >> kL are based on a sliding scale for this billing period\\
+<% for row in data.water.tariff_steps %><< row.description|latex >> at << row.rate|latex >>: << row.amount|latex >>\\
+<% endfor %>
+<% for row in data.water.adjustments %><< row.description|latex >>\\
+<% endfor %>
+VAT: 15.00\%
+\end{minipage} & &
+\begin{minipage}[t]{\linewidth}\RaggedLeft\vspace{28mm}<< data.water.subtotal|latex >>\\0.00\\47.80\\197.20\\<< data.water.vat|latex >>\end{minipage} &
+\begin{minipage}[t]{\linewidth}\RaggedLeft\vspace{42mm}<< data.water.total|latex >>\end{minipage}\\
+\hline
+\end{tabularx}
+\resetline
+
+\vspace{6mm}
+\boxrule
+\begin{tabularx}{\linewidth}{|p{0.56\linewidth}|p{0.17\linewidth}|R|R|}
+\hline
+\rowcolor{demoCream}
+\textbf{City of Johannesburg}\newline\textbf{Property Rates} & {\scriptsize\brown{\textbf{VAT: 4760117194}}} & \textbf{Sub - Total} & \textbf{Total Amount}\\
+\hline
+\begin{minipage}[t]{\linewidth}\small
+Category of Property: Property Rates Residential\\
+<< data.property.municipal_valuation|latex >> X residential tariff / 12 (Billing Period << data.statement.period|latex >>)\\
+Less rebates on first R350 000.00 of market value\\
+VAT: 0\%
+\end{minipage} & &
+\begin{minipage}[t]{\linewidth}\RaggedLeft\vspace{8mm}R 82.20\\R 0.00\\R 0.00\end{minipage} &
+\begin{minipage}[t]{\linewidth}\RaggedLeft\vspace{14mm}<< data.rates.total|latex >>\end{minipage}\\
+\hline
+\end{tabularx}
+\resetline
+
+\vspace{6mm}
+\boxrule
+\begin{tabularx}{\linewidth}{|p{0.56\linewidth}|p{0.17\linewidth}|R|R|}
+\hline
+\rowcolor{demoCream}
+\textbf{PIKITUP}\newline\textbf{Refuse} & {\scriptsize\brown{\textbf{VAT: 4790191292}}} & \textbf{Sub - Total} & \textbf{Total Amount}\\
+\hline
+\begin{minipage}[t]{\linewidth}\small
+Refuse Charge\\
+VAT: 15.00\%
+\end{minipage} & &
+\begin{minipage}[t]{\linewidth}\RaggedLeft R 54.83\\R 8.22\end{minipage} &
+<< data.refuse.total|latex >>\\
+\hline
+\end{tabularx}
+\resetline
+
+\vspace{8mm}
+\boxrule
+\begin{tabularx}{\linewidth}{|L R|}
+\hline
+\rowcolor{demoCream}{\large\brown{\textbf{Current Charges (including VAT)}}} & {\large\textbf{<< data.current_charges_including_vat|latex >>}}\\
+\hline
+\end{tabularx}
+\resetline
+
+\vfill
+\colorbox{demoCream}{%
+\begin{minipage}{\dimexpr\linewidth-2\fboxsep}
+\vspace{5pt}
+{\large\brown{\textbf{Where can a payment be made?}}}\\
+{\scriptsize Any City Office; any Post Office; any EasyPay site; any bank (branch, ATM or internet site).}\\
+{\scriptsize YOUR ACCOUNT NUMBER IS YOUR REFERENCE NUMBER.}\\[5pt]
+{\large\brown{\textbf{How to make a payment}}}\\
+{\scriptsize By debit order, cash or debit card. KEEP ALL RECEIPTS FOR FUTURE REFERENCE.}\\[5pt]
+{\large\brown{\textbf{When to make a payment}}}\\
+{\scriptsize Payments must reach the City on or before the due date.}\\[5pt]
+{\large\brown{\textbf{Change of address}}}\\
+{\scriptsize This must be done in writing and submitted to any CoJ Municipal Regional Office.}\\[5pt]
+{\large\brown{\textbf{Terminating electricity and water services?}}}\\
+{\scriptsize This must be done in writing 7 working days before the date you want your services terminated and submitted to any CoJ Municipal Regional Office.}\\
+\vspace{5pt}
+\end{minipage}}
+
+\end{document}

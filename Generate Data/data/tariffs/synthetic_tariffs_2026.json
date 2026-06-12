@@ -1,0 +1,22 @@
+{
+  "tariff_type": "synthetic_training_tariff",
+  "is_official_tariff": false,
+  "notes": "Synthetic tariff values for prototype data generation. Replace with verified official tariffs before production use.",
+  "vat_rate": 0.15,
+  "water_steps": [
+    {"description": "Step 1: 0-6 kL", "from_kl": 0, "to_kl": 6, "rate_per_kl": 0.00},
+    {"description": "Step 2: 7-15 kL", "from_kl": 6, "to_kl": 15, "rate_per_kl": 23.41},
+    {"description": "Step 3: 16-30 kL", "from_kl": 15, "to_kl": 30, "rate_per_kl": 33.88},
+    {"description": "Step 4: Above 30 kL", "from_kl": 30, "to_kl": null, "rate_per_kl": 42.72}
+  ],
+  "extended_social_package_grant": 0.00,
+  "demand_management_levy": 47.80,
+  "sewer_monthly_charge": 197.20,
+  "property_rates": {
+    "monthly_rate": 0.00035,
+    "rebate_value": 350000.00,
+    "vat_rate": 0.00
+  },
+  "refuse_charge": 54.83,
+  "refuse_vat_rate": 0.15
+}

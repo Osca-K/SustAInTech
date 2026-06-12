@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SustAInTech Municipal Statement Extraction",
+  "type": "object",
+  "required": [
+    "source_pdf_filename",
+    "extraction_method",
+    "extraction_status",
+    "validation_status",
+    "requires_manual_review",
+    "review_reasons",
+    "statement",
+    "household",
+    "water_meter",
+    "charges"
+  ],
+  "properties": {
+    "source_pdf_filename": {"type": "string"},
+    "extraction_method": {"type": "string"},
+    "extraction_status": {"type": "string"},
+    "validation_status": {"type": "string"},
+    "requires_manual_review": {"type": "boolean"},
+    "review_reasons": {"type": "array", "items": {"type": "string"}},
+    "statement": {
+      "type": "object",
+      "required": ["invoice_number", "statement_month", "statement_month_label", "statement_date", "due_date", "next_reading_date"],
+      "properties": {
+        "invoice_number": {"type": "string"},
+        "statement_month": {"type": "string"},
+        "statement_month_label": {"type": "string"},
+        "statement_date": {"type": "string"},
+        "due_date": {"type": "string"},
+        "next_reading_date": {"type": "string"}
+      }
+    },
+    "household": {
+      "type": "object",
+      "required": ["account_number", "customer_name", "physical_address", "stand_number", "township", "region", "ward"],
+      "properties": {
+        "account_number": {"type": "string"},
+        "customer_name": {"type": "string"},
+        "physical_address": {"type": "string"},
+        "stand_number": {"type": "string"},
+        "township": {"type": "string"},
+        "region": {"type": "string"},
+        "ward": {"type": "string"}
+      }
+    },
+    "water_meter": {
+      "type": "object",
+      "required": ["meter_number", "reading_period_start", "reading_period_end", "billing_days", "opening_reading_kL", "closing_reading_kL", "consumption_kL", "average_daily_consumption_kL", "reading_type"],
+      "properties": {
+        "meter_number": {"type": "string"},
+        "reading_period_start": {"type": "string"},
+        "reading_period_end": {"type": "string"},
+        "billing_days": {"type": "integer", "minimum": 0},
+        "opening_reading_kL": {"type": "number", "minimum": 0},
+        "closing_reading_kL": {"type": "number", "minimum": 0},
+        "consumption_kL": {"type": "number", "minimum": 0},
+        "average_daily_consumption_kL": {"type": "number", "minimum": 0},
+        "reading_type": {"type": "string"}
+      }
+    },
+    "charges": {
+      "type": "object",
+      "required": [
+        "water_charge_excluding_vat",
+        "extended_social_package_grant",
+        "demand_management_levy",
+        "sewer_monthly_charge",
+        "water_vat",
+        "water_total_including_vat",
+        "property_rates_total",
+        "refuse_total",
+        "current_charges_excluding_vat",
+        "current_vat_total",
+        "current_charges_including_vat",
+        "previous_account_balance",
+        "incoming_payment",
+        "subtotal",
+        "total_due"
+      ],
+      "properties": {
+        "water_charge_excluding_vat": {"type": "number", "minimum": 0},
+        "extended_social_package_grant": {"type": "number", "minimum": 0},
+        "demand_management_levy": {"type": "number", "minimum": 0},
+        "sewer_monthly_charge": {"type": "number", "minimum": 0},
+        "water_vat": {"type": "number", "minimum": 0},
+        "water_total_including_vat": {"type": "number", "minimum": 0},
+        "property_rates_total": {"type": "number", "minimum": 0},
+        "refuse_total": {"type": "number", "minimum": 0},
+        "current_charges_excluding_vat": {"type": "number", "minimum": 0},
+        "current_vat_total": {"type": "number", "minimum": 0},
+        "current_charges_including_vat": {"type": "number", "minimum": 0},
+        "previous_account_balance": {"type": "number"},
+        "incoming_payment": {"type": "number"},
+        "subtotal": {"type": "number"},
+        "total_due": {"type": "number", "minimum": 0}
+      }
+    }
+  }
+}

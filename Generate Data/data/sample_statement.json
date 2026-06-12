@@ -1,0 +1,142 @@
+{
+  "is_synthetic": true,
+  "statement": {
+    "date": "2026/06/01",
+    "period": "June 2026",
+    "invoice_number": "136026060148",
+    "next_reading_date": "2026/06/28",
+    "client_vat_number": "401029884",
+    "deposit": "R 0.00",
+    "due_date": "2026/06/20"
+  },
+  "customer": {
+    "name": "THABO MOKOENA",
+    "postal_address": [
+      "P O BOX 118",
+      "SOWETO",
+      "1868"
+    ],
+    "physical_address": "14 HARRIER STREET, STAR VILLAGE, PROTEA GLEN EXT.28",
+    "stand_portion": "0000140 - 0000",
+    "township": "PROTEA GLEN EXT.28"
+  },
+  "property": {
+    "stand_size": "395 m2",
+    "number_of_dwellings": "1",
+    "date_of_valuation": "2023/07/01",
+    "portion": "D1",
+    "municipal_valuation": "R 820,000.00",
+    "region": "Region D WARD 31"
+  },
+  "account": {
+    "number": "800014872",
+    "pin": "482106"
+  },
+  "summary": {
+    "previous_balance": "R 968.45",
+    "incoming_payment": "R -968.45",
+    "sub_total": "R 0.00",
+    "current_charges_excl_vat": "R 1,143.64",
+    "vat": "R 159.21",
+    "total_due": "R 1,302.85"
+  },
+  "ageing": {
+    "90_days_plus": "R 0.00",
+    "60_days": "R 0.00",
+    "30_days": "R 0.00",
+    "current": "R 1,302.85",
+    "installment_plan": "R 0.00",
+    "total_outstanding": "R 1,302.85"
+  },
+  "message": "Customers are encouraged to monitor monthly water consumption and report suspected leaks promptly.",
+  "payment": {
+    "easypay_reference": "91115 8000148725",
+    "post_office_reference": "0146 800014872",
+    "standard_bank_reference": "800014872",
+    "beneficiary": "City of Johannesburg",
+    "bank": "Standard Bank",
+    "branch_code": "051001",
+    "account_type": "Current",
+    "account_number": "000800014872"
+  },
+  "water": {
+    "service_name": "Johannesburg Water and Sanitation",
+    "reading_period": "2026/05/01 to 2026/05/31",
+    "meter_number": "#775201",
+    "register": "A",
+    "multiply_factor": "1",
+    "start_reading": "1248",
+    "end_reading": "1279",
+    "difference": "31",
+    "consumption": "31",
+    "units": "kL",
+    "reading_type": "Actual Readings",
+    "average_daily_consumption": "1.00 kL",
+    "tariff_steps": [
+      {
+        "description": "Step 1: 0-6 kL",
+        "quantity": "6 kL",
+        "rate": "R 0.00",
+        "amount": "R 0.00"
+      },
+      {
+        "description": "Step 2: 7-15 kL",
+        "quantity": "9 kL",
+        "rate": "R 23.41",
+        "amount": "R 210.69"
+      },
+      {
+        "description": "Step 3: 16-30 kL",
+        "quantity": "15 kL",
+        "rate": "R 33.88",
+        "amount": "R 508.20"
+      },
+      {
+        "description": "Step 4: Above 30 kL",
+        "quantity": "1 kL",
+        "rate": "R 42.72",
+        "amount": "R 42.72"
+      }
+    ],
+    "adjustments": [
+      {
+        "description": "Extended Social Package Grant",
+        "amount": "R 0.00"
+      },
+      {
+        "description": "Demand Management Levy",
+        "amount": "R 47.80"
+      },
+      {
+        "description": "Sewer Monthly Charge",
+        "amount": "R 197.20"
+      }
+    ],
+    "vat": "R 150.99",
+    "subtotal": "R 1,006.61",
+    "total": "R 1,157.60"
+  },
+  "rates": {
+    "service_name": "City of Johannesburg Property Rates",
+    "rows": [
+      {
+        "description": "Residential property rates - valuation",
+        "period": "2026/06",
+        "amount": "R 82.20"
+      }
+    ],
+    "total": "R 82.20"
+  },
+  "refuse": {
+    "service_name": "Pikitup Refuse",
+    "rows": [
+      {
+        "description": "Domestic refuse removal - dwelling",
+        "period": "2026/06",
+        "amount": "R 63.05"
+      }
+    ],
+    "total": "R 63.05"
+  },
+  "current_charges_including_vat": "R 1,302.85"
+}

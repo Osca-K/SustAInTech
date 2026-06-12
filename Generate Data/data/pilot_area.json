@@ -1,0 +1,13 @@
+{
+  "pilot_name": "Star Village / New Protea Pilot",
+  "development": "Star Village / New Protea",
+  "municipality": "City of Johannesburg",
+  "suburb": "Protea Glen",
+  "extension": "Protea Glen Ext.28",
+  "city": "Soweto",
+  "postal_code": "1819",
+  "region": "Region D",
+  "ward": "WARD 53",
+  "coordinate_status": "pending_manual_verification",
+  "notes": "Synthetic household records for SustAInTech development and dashboard testing."
+}
