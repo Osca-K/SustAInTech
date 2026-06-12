@@ -10,7 +10,9 @@ The insights API infers unusual water-usage patterns dynamically from operationa
 
 The meter-submissions API accepts resident-confirmed water-meter photos and manual readings. It stores images on the filesystem, records only image paths in SQLite, checks duplicate image hashes, evaluates image freshness metadata, and validates readings against trusted historical readings.
 
-The meter photo extraction API adds an AI-ready resident confirmation flow using a development mock adapter. The mock adapter is selected by `SUSTAINTECH_METER_EXTRACTION_PROVIDER=mock`, returns deterministic placeholder values, and records that no real image analysis was performed. OCR and external AI APIs are not connected yet. A future OCR or vision adapter can replace the mock behind the same adapter interface while preserving the frontend confirmation flow and database fields.
+The meter photo extraction API adds an AI-ready resident confirmation flow. The default development mock adapter is selected by `SUSTAINTECH_METER_EXTRACTION_PROVIDER=mock`, returns deterministic placeholder values, and records that no real image analysis was performed.
+
+An optional OpenAI vision adapter is available with `SUSTAINTECH_METER_EXTRACTION_PROVIDER=openai_vision`. It uses the OpenAI Responses API with structured output to suggest visible meter details from the uploaded image. It never sends the API key to the frontend, does not validate plausibility, does not classify leaks, and does not create trusted readings without resident confirmation.
 
 ## Setup
 
@@ -69,10 +71,22 @@ GET http://127.0.0.1:8000/api/meter-submissions
 Environment:
 
 ```env
+OPENAI_API_KEY=
 SUSTAINTECH_METER_EXTRACTION_PROVIDER=mock
+SUSTAINTECH_OPENAI_VISION_MODEL=gpt-5.5
 ```
 
+Use `SUSTAINTECH_METER_EXTRACTION_PROVIDER=openai_vision` only when `OPENAI_API_KEY` is configured locally or in deployment. Missing keys raise a configuration error rather than silently falling back to the mock adapter.
+
 Resident confirmation remains mandatory. Confirmed extraction values are passed through the same deterministic freshness, duplicate-image, and plausibility checks as manual submissions.
+
+Optional live smoke test:
+
+```powershell
+python backend\scripts\test_openai_meter_extraction.py --image "path\to\meter-photo.jpg"
+```
+
+The smoke test requires `OPENAI_API_KEY`, does not write to the database, and prints only the structured extraction fields. Automated tests mock the OpenAI SDK and do not make live API requests.
 
 ## Tests
 

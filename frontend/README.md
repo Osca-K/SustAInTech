@@ -70,18 +70,22 @@ Resident meter-photo tracking is now available from each household dashboard:
 http://localhost:3000/household/{household_id}/meter-upload
 ```
 
-Residents upload a recent water-meter photo, click `Analyse meter photo`, review the suggested meter details, and confirm or correct the visible reading before submission. The current analysis step uses a backend development mock adapter only; no OCR or external AI model is connected yet. The mock keeps the interface ready for a future OCR or vision adapter without changing the resident flow.
+Residents upload a recent water-meter photo, click `Analyse meter photo`, review the suggested meter details, and confirm or correct the visible reading before submission. The backend defaults to a development mock adapter. It can optionally use OpenAI vision extraction when the backend is configured with `SUSTAINTECH_METER_EXTRACTION_PROVIDER=openai_vision` and `OPENAI_API_KEY`.
 
-The backend performs deterministic freshness, duplicate-image, and reading-plausibility checks after resident confirmation. The original manual submission route remains available as a fallback when extraction is unavailable, low-confidence, or the resident prefers manual entry. Municipal staff can review recent resident submissions at:
+The frontend never receives `OPENAI_API_KEY`. It only displays backend extraction suggestions, confidence, image quality, and notes. The resident can edit the values, and confirmation remains required. The backend performs deterministic freshness, duplicate-image, and reading-plausibility checks after resident confirmation. The original manual submission route remains available as a fallback when extraction is unavailable, low-confidence, or the resident prefers manual entry. Municipal staff can review recent resident submissions at:
 
 ```text
 http://localhost:3000/municipal/meter-submissions
 ```
 
-Set the extraction provider with:
+Set the extraction provider in backend/server environment only:
 
 ```env
+OPENAI_API_KEY=
 SUSTAINTECH_METER_EXTRACTION_PROVIDER=mock
+SUSTAINTECH_OPENAI_VISION_MODEL=gpt-5.5
 ```
+
+Use `SUSTAINTECH_METER_EXTRACTION_PROVIDER=openai_vision` only when the backend has `OPENAI_API_KEY` configured.
 
 Resident confirmation remains required before any reading becomes trusted operational data.

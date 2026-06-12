@@ -143,7 +143,13 @@ def test_duplicate_image_detection_still_works(meter_client):
 
 def test_extraction_failure_allows_confirmation_fallback(meter_client, monkeypatch):
     client, ids = meter_client
-    monkeypatch.setenv("SUSTAINTECH_METER_EXTRACTION_PROVIDER", "unsupported")
+
+    from app.routes import meter_submissions
+
+    def failing_adapter():
+        raise ValueError("adapter failed")
+
+    monkeypatch.setattr(meter_submissions, "get_meter_photo_extraction_adapter", failing_adapter)
 
     extraction = extract(client, ids["household_id"])
     confirmation = confirm(client, ids["household_id"], extraction.json()["extraction_id"])

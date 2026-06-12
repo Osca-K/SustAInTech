@@ -20,3 +20,12 @@ def get_meter_uploads_path() -> Path:
 
 def get_meter_extraction_provider() -> str:
     return os.getenv("SUSTAINTECH_METER_EXTRACTION_PROVIDER", "mock").strip().lower()
+
+
+def get_openai_api_key() -> str | None:
+    configured = os.getenv("OPENAI_API_KEY")
+    return configured.strip() if configured and configured.strip() else None
+
+
+def get_openai_vision_model() -> str:
+    return os.getenv("SUSTAINTECH_OPENAI_VISION_MODEL", "gpt-5.5").strip() or "gpt-5.5"

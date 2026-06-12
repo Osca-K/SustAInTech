@@ -16,6 +16,7 @@ from ..models import (
     MunicipalMeterSubmissionListItem,
 )
 from ..services.meter_photo_extraction import get_meter_photo_extraction_adapter
+from ..services.meter_photo_extraction.base import extraction_status_for_result
 from ..services.meter_photo_extraction.mock_adapter import DEVELOPMENT_NOTE
 from ..services.meter_submission_validation import (
     ImageInspection,
@@ -132,6 +133,7 @@ def public_extraction_response(row: dict, image_quality_status: str = "acceptabl
         suggested_reading_kL=row["ai_extracted_reading_kL"],
         confidence_score=row["ai_confidence_score"] or 0.0,
         image_quality_status=image_quality_status,
+        extraction_notes=[str(note) for note in notes],
         requires_resident_confirmation=True,
         resident_message=extraction_resident_message(row["ai_extraction_status"], notes),
     )
@@ -173,6 +175,7 @@ async def extract_meter_photo(
                 suggested_reading_kL=None,
                 confidence_score=0.0,
                 image_quality_status="unsupported",
+                extraction_notes=["This same meter photo has already been uploaded."],
                 requires_resident_confirmation=False,
                 resident_message="Image already submitted. This same meter photo has already been uploaded.",
             )
@@ -200,7 +203,7 @@ async def extract_meter_photo(
             "resident_confirmed": 0,
             "ai_extraction_status": "pending",
             "ai_extraction_notes_json": validation_notes_json([]),
-            "ai_extraction_method": "development_mock_adapter",
+            "ai_extraction_method": None,
         }
         with connection:
             connection.execute(
@@ -228,9 +231,7 @@ async def extract_meter_photo(
 
         try:
             extraction = get_meter_photo_extraction_adapter().extract(image_path)
-            status = "completed" if extraction.confidence_score >= 0.5 else "low_confidence"
-            if not extraction.is_water_meter_image:
-                status = "failed"
+            status = extraction_status_for_result(extraction)
             extracted_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
             notes = extraction.extraction_notes
             with connection:
@@ -270,6 +271,20 @@ async def extract_meter_photo(
                 }
             )
             return public_extraction_response(row, extraction.image_quality_status)
+        except RuntimeError as exc:
+            notes = [str(exc)]
+            with connection:
+                connection.execute(
+                    """
+                    UPDATE household_meter_submissions
+                    SET ai_extraction_status = 'failed',
+                        ai_extraction_notes_json = ?,
+                        updated_at = datetime('now')
+                    WHERE submission_id = ?
+                    """,
+                    (validation_notes_json(notes), submission_id),
+                )
+            raise HTTPException(status_code=500, detail=str(exc)) from exc
         except Exception as exc:
             notes = [DEVELOPMENT_NOTE, "Automatic extraction unavailable. Enter the visible meter reading manually to continue."]
             with connection:

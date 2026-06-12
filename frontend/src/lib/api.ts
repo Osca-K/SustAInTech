@@ -180,6 +180,7 @@ export type MeterPhotoExtractionResponse = {
   suggested_reading_kL: number | null;
   confidence_score: number;
   image_quality_status: string;
+  extraction_notes: string[];
   requires_resident_confirmation: boolean;
   resident_message: string;
 };

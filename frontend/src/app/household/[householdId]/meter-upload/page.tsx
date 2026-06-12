@@ -342,6 +342,20 @@ function ConfirmationForm({
           visible meter details manually.
         </p>
       ) : null}
+      {extraction.ai_extraction_status === "low_confidence" ? (
+        <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          We could not read the meter confidently. Review the image and enter the visible values
+          manually.
+        </p>
+      ) : null}
+      {extraction.ai_extraction_status === "failed" ? (
+        <p className="mt-3 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
+          Automatic reading unavailable. Enter the visible meter details manually to continue.
+        </p>
+      ) : null}
+      <p className="mt-3 text-sm text-slate-600">
+        Please confirm or correct the suggested values before submitting.
+      </p>
 
       <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
         <InfoItem label="Image freshness" value={labelize(extraction.image_freshness_status)} />
@@ -358,6 +372,17 @@ function ConfirmationForm({
         <InfoItem label="Confidence" value={`${Math.round(extraction.confidence_score * 100)}%`} />
         <InfoItem label="Status" value={labelize(extraction.ai_extraction_status)} />
       </dl>
+
+      {extraction.extraction_notes.length ? (
+        <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600">
+          <p className="font-medium text-slate-800">Extraction notes</p>
+          <ul className="mt-2 list-disc space-y-1 pl-5">
+            {extraction.extraction_notes.map((note) => (
+              <li key={note}>{note}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
 
       <label className="mt-5 block text-sm font-medium text-slate-700">
         Meter number

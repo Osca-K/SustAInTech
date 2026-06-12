@@ -197,6 +197,7 @@ class MeterPhotoExtractionResponse(BaseModel):
     suggested_reading_kL: float | None
     confidence_score: float
     image_quality_status: str
+    extraction_notes: list[str]
     requires_resident_confirmation: bool
     resident_message: str
 
