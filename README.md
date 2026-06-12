@@ -15,3 +15,30 @@ This repository separates synthetic document generation from application-layer s
 `database/` stores only validated operational records from ingestion outputs.
 
 `backend/` exposes municipal-dashboard API endpoints over validated operational records.
+
+`frontend/` displays the municipal dashboard and statement-upload workflow using the backend API.
+
+## Run Locally
+
+Start the backend:
+
+```powershell
+cd backend
+.venv\Scripts\Activate.ps1
+uvicorn app.main:app --reload
+```
+
+Start the frontend:
+
+```powershell
+cd frontend
+npm run dev
+```
+
+Open the upload page:
+
+```text
+http://localhost:3000/municipal/uploads
+```
+
+Uploaded PDFs flow through extraction, validation, deduplication, and database import before appearing in municipal dashboard data.

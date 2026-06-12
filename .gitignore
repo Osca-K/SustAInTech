@@ -7,17 +7,49 @@ htmlcov/
 .venv/
 venv/
 
-# Environment variables
+# Environment files
 .env
 .env.*
 !.env.example
+
+# Frontend
+frontend/node_modules/
+frontend/.next/
+frontend/.env.local
 
 # Local databases
 database/local/*.db
 *.sqlite
 *.sqlite3
 
-# LaTeX build artifacts
+# Ingestion runtime inputs and outputs
+ingestion/input/uploads/
+ingestion/input/batch_*/
+ingestion/input/**/*.pdf
+ingestion/output/extracted/
+ingestion/output/batches/
+ingestion/output/extracted/**
+ingestion/output/batches/**
+ingestion/output/*.json
+ingestion/output/processed_files_registry.json
+!ingestion/output/
+!ingestion/output/.gitkeep
+!ingestion/output/extracted/
+!ingestion/output/extracted/.gitkeep
+!ingestion/output/batches/
+!ingestion/output/batches/.gitkeep
+
+# Generated statements, generated data, and LaTeX artifacts
+Generate Data/data/generated/
+Generate Data/data/render_inputs/
+Generate Data/data/evaluation/
+Generate Data/output/
+Generate Data/output/**
+!Generate Data/output/
+!Generate Data/output/pdf/
+!Generate Data/output/pdf/.gitkeep
+!Generate Data/output/generated_tex/
+!Generate Data/output/generated_tex/.gitkeep
 *.aux
 *.log
 *.out
@@ -26,34 +58,11 @@ database/local/*.db
 *.fdb_latexmk
 *.synctex.gz
 
-# Operating-system and editor clutter
-.DS_Store
-Thumbs.db
+# Editor and OS files
 .vscode/
 .idea/
+.DS_Store
+Thumbs.db
 
-# Backend runtime clutter
-backend/.venv/
-backend/__pycache__/
-
-# Generated ingestion outputs
-ingestion/output/*.json
-ingestion/output/extracted/*.json
-ingestion/output/batches/*.json
-ingestion/output/processed_files_registry.json
-!ingestion/output/.gitkeep
-!ingestion/output/extracted/.gitkeep
-!ingestion/output/batches/.gitkeep
-
-# Optional local ingestion inputs
-ingestion/input/**/*.pdf
-
-# Generated statement outputs
-Generate Data/data/generated/*
-Generate Data/data/render_inputs/*.json
-Generate Data/data/evaluation/*.csv
-Generate Data/output/pdf/*.pdf
-Generate Data/output/pdf/*.png
-Generate Data/output/generated_tex/*
-!Generate Data/output/pdf/.gitkeep
-!Generate Data/output/generated_tex/.gitkeep
+# Unrelated local folder
+Data/

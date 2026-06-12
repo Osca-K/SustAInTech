@@ -74,3 +74,32 @@ class HouseholdMonthlyUsageItem(BaseModel):
 class StatementUploadSummary(BaseModel):
     processing_status: str
     count: int
+
+
+class StatementUploadFileResult(BaseModel):
+    source_pdf_filename: str
+    processing_status: str
+    validation_status: str
+    requires_manual_review: bool
+    review_reasons: list[str]
+
+
+class StatementUploadResponse(BaseModel):
+    batch_id: str
+    total_files: int
+    import_ready_count: int
+    review_required_count: int
+    failed_count: int
+    duplicate_skipped_count: int
+    imported_count: int
+    files: list[StatementUploadFileResult]
+
+
+class UploadBatchHistoryItem(BaseModel):
+    batch_id: str
+    processed_at: str
+    total_pdf_files: int
+    import_ready_count: int
+    review_required_count: int
+    failed_count: int
+    duplicate_skipped_count: int
