@@ -25,13 +25,13 @@ Current municipal frontend workflows include:
 - household search, list view, profile details, meter details, monthly usage chart, and billing-history table.
 - municipal insights inferred dynamically from operational water readings to identify accounts requiring review.
 - household portal demo with resident profile selection, monthly water usage, latest bill summary, and resident-friendly usage insights.
-- household water meter-photo tracking with resident-confirmed readings, deterministic freshness checks, duplicate-image checks, and municipal submission review.
+- household water meter-photo tracking with resident-confirmed readings, deterministic freshness checks, duplicate-image checks, mock photo-analysis confirmation, and municipal submission review.
 
 Insights do not read hidden ground-truth labels and do not confirm leaks. They provide a deterministic baseline for future AI explanation agents.
 
-The household portal uses demo access for now. Real authentication will come later, and daily meter-photo uploads are planned as the next resident-facing workflow.
+The household portal uses demo access for now. Real authentication will come later.
 
-Meter-photo tracking stores uploaded images on the filesystem and stores only image paths and metadata in SQLite. AI extraction fields are reserved for a later phase; OCR and external AI APIs are not used yet.
+Meter-photo tracking stores uploaded images on the filesystem and stores only image paths and metadata in SQLite. The resident upload page now supports a two-step photo-analysis and confirmation flow. The current adapter is a development mock selected with `SUSTAINTECH_METER_EXTRACTION_PROVIDER=mock`; it does not perform OCR, does not call an external AI API, and does not claim to understand the image. Resident confirmation is still required before deterministic freshness and plausibility checks can create a trusted operational reading.
 
 ## Run Locally
 

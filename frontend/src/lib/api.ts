@@ -167,6 +167,30 @@ export type MeterSubmissionResult = {
   resident_confirmed: boolean;
 };
 
+export type MeterPhotoExtractionResponse = {
+  extraction_id: string;
+  household_id: string;
+  meter_id: string;
+  submitted_at: string;
+  image_freshness_status: string;
+  ai_extraction_status: string;
+  ai_extraction_method: string;
+  is_water_meter_image: boolean;
+  suggested_meter_number: string | null;
+  suggested_reading_kL: number | null;
+  confidence_score: number;
+  image_quality_status: string;
+  requires_resident_confirmation: boolean;
+  resident_message: string;
+};
+
+export type MeterPhotoExtractionConfirmationPayload = {
+  confirmed_meter_number: string | null;
+  confirmed_reading_kL: number;
+  resident_corrected_value: boolean;
+  resident_confirmed: boolean;
+};
+
 export type MeterSubmissionHistoryItem = {
   submission_id: string;
   submitted_at: string;
@@ -338,6 +362,48 @@ export async function submitHouseholdMeterReading(
   if (!response.ok) {
     const message = await readableError(response);
     throw new Error(message || `Meter submission failed: ${response.status}`);
+  }
+
+  return response.json() as Promise<MeterSubmissionResult>;
+}
+
+export async function extractHouseholdMeterPhoto(
+  householdId: string,
+  formData: FormData,
+): Promise<MeterPhotoExtractionResponse> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/households/${householdId}/meter-photo-extractions`,
+    {
+      method: "POST",
+      body: formData,
+    },
+  );
+
+  if (!response.ok) {
+    const message = await readableError(response);
+    throw new Error(message || `Meter photo analysis failed: ${response.status}`);
+  }
+
+  return response.json() as Promise<MeterPhotoExtractionResponse>;
+}
+
+export async function confirmHouseholdMeterExtraction(
+  householdId: string,
+  extractionId: string,
+  payload: MeterPhotoExtractionConfirmationPayload,
+): Promise<MeterSubmissionResult> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/households/${householdId}/meter-photo-extractions/${extractionId}/confirm`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    },
+  );
+
+  if (!response.ok) {
+    const message = await readableError(response);
+    throw new Error(message || `Meter confirmation failed: ${response.status}`);
   }
 
   return response.json() as Promise<MeterSubmissionResult>;

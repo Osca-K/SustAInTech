@@ -8,7 +8,9 @@ The uploads API accepts municipal statement PDFs, saves each upload into a uniqu
 
 The insights API infers unusual water-usage patterns dynamically from operational monthly readings in SQLite. It does not read hidden ground-truth labels, does not persist anomaly tables, and does not confirm leaks. Future AI agents can add explanation layers on top of these deterministic rules without replacing the baseline validation logic.
 
-The meter-submissions API accepts resident-confirmed water-meter photos and manual readings. It stores images on the filesystem, records only image paths in SQLite, checks duplicate image hashes, evaluates image freshness metadata, validates readings against trusted historical readings, and reserves AI extraction fields for a later phase. OCR and external AI APIs are not used yet.
+The meter-submissions API accepts resident-confirmed water-meter photos and manual readings. It stores images on the filesystem, records only image paths in SQLite, checks duplicate image hashes, evaluates image freshness metadata, and validates readings against trusted historical readings.
+
+The meter photo extraction API adds an AI-ready resident confirmation flow using a development mock adapter. The mock adapter is selected by `SUSTAINTECH_METER_EXTRACTION_PROVIDER=mock`, returns deterministic placeholder values, and records that no real image analysis was performed. OCR and external AI APIs are not connected yet. A future OCR or vision adapter can replace the mock behind the same adapter interface while preserving the frontend confirmation flow and database fields.
 
 ## Setup
 
@@ -56,11 +58,21 @@ GET http://127.0.0.1:8000/api/households/{household_id}/insights
 Meter submissions:
 
 ```text
+POST http://127.0.0.1:8000/api/households/{household_id}/meter-photo-extractions
+POST http://127.0.0.1:8000/api/households/{household_id}/meter-photo-extractions/{extraction_id}/confirm
 POST http://127.0.0.1:8000/api/households/{household_id}/meter-submissions
 GET http://127.0.0.1:8000/api/households/{household_id}/meter-submissions
 GET http://127.0.0.1:8000/api/households/{household_id}/meter-tracking-summary
 GET http://127.0.0.1:8000/api/meter-submissions
 ```
+
+Environment:
+
+```env
+SUSTAINTECH_METER_EXTRACTION_PROVIDER=mock
+```
+
+Resident confirmation remains mandatory. Confirmed extraction values are passed through the same deterministic freshness, duplicate-image, and plausibility checks as manual submissions.
 
 ## Tests
 

@@ -182,3 +182,27 @@ class MunicipalMeterSubmissionListItem(BaseModel):
     estimated_daily_usage_kL: float | None
     image_freshness_status: str
     validation_status: str
+
+
+class MeterPhotoExtractionResponse(BaseModel):
+    extraction_id: str
+    household_id: str
+    meter_id: str
+    submitted_at: str
+    image_freshness_status: str
+    ai_extraction_status: str
+    ai_extraction_method: str
+    is_water_meter_image: bool
+    suggested_meter_number: str | None
+    suggested_reading_kL: float | None
+    confidence_score: float
+    image_quality_status: str
+    requires_resident_confirmation: bool
+    resident_message: str
+
+
+class MeterPhotoExtractionConfirmationRequest(BaseModel):
+    confirmed_meter_number: str | None = None
+    confirmed_reading_kL: float
+    resident_corrected_value: bool
+    resident_confirmed: bool

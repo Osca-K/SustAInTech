@@ -126,6 +126,10 @@ CREATE TABLE IF NOT EXISTS household_meter_submissions (
   ai_extracted_meter_number TEXT,
   ai_extracted_reading_kL NUMERIC,
   ai_confidence_score NUMERIC,
+  ai_extraction_status TEXT NOT NULL DEFAULT 'not_requested' CHECK (ai_extraction_status IN ('not_requested', 'pending', 'completed', 'low_confidence', 'failed')),
+  ai_extraction_notes_json JSONB NOT NULL DEFAULT '[]'::jsonb,
+  ai_extraction_method TEXT,
+  ai_extracted_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );

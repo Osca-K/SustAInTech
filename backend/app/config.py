@@ -16,3 +16,7 @@ def get_database_path() -> Path:
 def get_meter_uploads_path() -> Path:
     configured = os.getenv("SUSTAINTECH_METER_UPLOADS_PATH")
     return Path(configured) if configured else DEFAULT_METER_UPLOADS_PATH
+
+
+def get_meter_extraction_provider() -> str:
+    return os.getenv("SUSTAINTECH_METER_EXTRACTION_PROVIDER", "mock").strip().lower()

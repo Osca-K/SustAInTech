@@ -3,7 +3,13 @@
 import Link from "next/link";
 import { ChangeEvent, use, useMemo, useRef, useState } from "react";
 
-import { MeterSubmissionResult, submitHouseholdMeterReading } from "@/lib/api";
+import {
+  MeterPhotoExtractionResponse,
+  MeterSubmissionResult,
+  confirmHouseholdMeterExtraction,
+  extractHouseholdMeterPhoto,
+  submitHouseholdMeterReading,
+} from "@/lib/api";
 
 type MeterUploadPageProps = {
   params: Promise<{
@@ -11,26 +17,34 @@ type MeterUploadPageProps = {
   }>;
 };
 
+type UploadState =
+  | "idle"
+  | "uploading"
+  | "analysing"
+  | "awaiting_confirmation"
+  | "submitting_confirmation"
+  | "completed"
+  | "error";
+
 const resultCopy: Record<string, { title: string; message: string; className: string }> = {
   accepted: {
     title: "Reading accepted",
-    message: "Your meter reading has been added to your household tracking history.",
+    message: "Your confirmed meter reading has been added to your household tracking history.",
     className: "border-emerald-200 bg-emerald-50 text-emerald-800",
   },
   review_required: {
     title: "Review required",
-    message:
-      "Your submitted reading increased unusually quickly. The reading has been saved for review.",
+    message: "Your reading was saved, but the usage increase requires further review.",
     className: "border-amber-200 bg-amber-50 text-amber-800",
   },
   retake_required: {
     title: "Please retake the photo",
-    message: "This image appears to be older than the allowed upload window.",
+    message: "The uploaded image appears too old or cannot be trusted.",
     className: "border-rose-200 bg-rose-50 text-rose-700",
   },
   rejected: {
     title: "Reading rejected",
-    message: "The submitted meter reading is lower than your latest trusted reading.",
+    message: "The confirmed reading is lower than your latest trusted reading.",
     className: "border-rose-200 bg-rose-50 text-rose-700",
   },
   duplicate_image: {
@@ -45,23 +59,107 @@ export default function MeterUploadPage({ params }: MeterUploadPageProps) {
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
+  const [meterNumber, setMeterNumber] = useState("");
   const [reading, setReading] = useState("");
   const [confirmed, setConfirmed] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadState, setUploadState] = useState<UploadState>("idle");
+  const [extraction, setExtraction] = useState<MeterPhotoExtractionResponse | null>(null);
   const [result, setResult] = useState<MeterSubmissionResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const previewUrl = useMemo(() => (file ? URL.createObjectURL(file) : null), [file]);
+  const isBusy =
+    uploadState === "uploading" ||
+    uploadState === "analysing" ||
+    uploadState === "submitting_confirmation";
 
   function onFileChange(event: ChangeEvent<HTMLInputElement>) {
     const selected = event.target.files?.[0] ?? null;
     setFile(selected);
+    setExtraction(null);
     setResult(null);
     setError(null);
+    setUploadState("idle");
     event.target.value = "";
   }
 
-  async function onSubmit() {
+  async function analysePhoto() {
+    if (!file) {
+      setError("Choose a meter photo before analysing it.");
+      setUploadState("error");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("image", file);
+    if (file.lastModified) {
+      formData.append("browser_last_modified_at", new Date(file.lastModified).toISOString());
+    }
+
+    let nextState: UploadState = "error";
+    setUploadState("uploading");
+    setError(null);
+    try {
+      setUploadState("analysing");
+      const response = await extractHouseholdMeterPhoto(householdId, formData);
+      setExtraction(response);
+      setMeterNumber(response.suggested_meter_number ?? "");
+      setReading(response.suggested_reading_kL?.toString() ?? "");
+      setConfirmed(false);
+      nextState = "awaiting_confirmation";
+    } catch (analysisError) {
+      setError(analysisError instanceof Error ? analysisError.message : "Photo analysis failed.");
+      nextState = "error";
+    } finally {
+      setUploadState(nextState);
+    }
+  }
+
+  async function confirmExtraction() {
+    if (!extraction || !reading || !confirmed) {
+      setError("Enter the visible reading and confirm it before submitting.");
+      return;
+    }
+
+    let nextState: UploadState = "awaiting_confirmation";
+    setUploadState("submitting_confirmation");
+    setError(null);
+    try {
+      const parsedReading = Number(reading);
+      const suggestedReading = extraction.suggested_reading_kL;
+      const residentCorrected =
+        meterNumber.trim() !== (extraction.suggested_meter_number ?? "") ||
+        suggestedReading === null ||
+        Math.abs(parsedReading - suggestedReading) > 0.0001;
+      const response = await confirmHouseholdMeterExtraction(
+        householdId,
+        extraction.extraction_id,
+        {
+          confirmed_meter_number: meterNumber.trim() || null,
+          confirmed_reading_kL: parsedReading,
+          resident_corrected_value: residentCorrected,
+          resident_confirmed: confirmed,
+        },
+      );
+      setResult(response);
+      nextState = "completed";
+    } catch (confirmationError) {
+      setError(
+        confirmationError instanceof Error
+          ? confirmationError.message
+          : "Meter reading confirmation failed.",
+      );
+      nextState = "awaiting_confirmation";
+    } finally {
+      setUploadState(nextState);
+    }
+  }
+
+  async function submitManualFallback() {
+    if (extraction) {
+      await confirmExtraction();
+      return;
+    }
     if (!file || !reading || !confirmed) {
       setError("Choose a meter photo, enter the visible reading, and confirm it before submitting.");
       return;
@@ -75,14 +173,17 @@ export default function MeterUploadPage({ params }: MeterUploadPageProps) {
       formData.append("browser_last_modified_at", new Date(file.lastModified).toISOString());
     }
 
-    setIsSubmitting(true);
+    let nextState: UploadState = "awaiting_confirmation";
+    setUploadState("submitting_confirmation");
     setError(null);
     try {
       setResult(await submitHouseholdMeterReading(householdId, formData));
+      nextState = "completed";
     } catch (submissionError) {
       setError(submissionError instanceof Error ? submissionError.message : "Submission failed.");
+      nextState = "awaiting_confirmation";
     } finally {
-      setIsSubmitting(false);
+      setUploadState(nextState);
     }
   }
 
@@ -167,48 +268,157 @@ export default function MeterUploadPage({ params }: MeterUploadPageProps) {
               </div>
             ) : null}
 
-            <label className="mt-5 block text-sm font-medium text-slate-700">
-              Visible meter reading in kL
-              <input
-                type="number"
-                min="0"
-                step="0.001"
-                value={reading}
-                onChange={(event) => setReading(event.target.value)}
-                className="mt-2 min-h-10 w-full rounded-md border border-slate-300 px-3 text-slate-900 outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
-              />
-            </label>
+            <button
+              type="button"
+              onClick={analysePhoto}
+              disabled={isBusy || !file}
+              className="mt-5 w-full rounded-md bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-800 disabled:cursor-not-allowed disabled:bg-slate-300"
+            >
+              {uploadState === "analysing" ? "Analysing..." : "Analyse meter photo"}
+            </button>
 
-            <label className="mt-4 flex gap-3 text-sm text-slate-600">
-              <input
-                type="checkbox"
-                checked={confirmed}
-                onChange={(event) => setConfirmed(event.target.checked)}
-                className="mt-1"
+            {extraction ? (
+              <ConfirmationForm
+                extraction={extraction}
+                meterNumber={meterNumber}
+                reading={reading}
+                confirmed={confirmed}
+                isBusy={isBusy}
+                onMeterNumberChange={setMeterNumber}
+                onReadingChange={setReading}
+                onConfirmedChange={setConfirmed}
+                onConfirm={confirmExtraction}
+                onManualFallback={submitManualFallback}
               />
-              I confirm that I entered the visible meter reading from this photo.
-            </label>
+            ) : null}
 
             {error ? (
               <p className="mt-4 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
                 {error}
               </p>
             ) : null}
-
-            <button
-              type="button"
-              onClick={onSubmit}
-              disabled={isSubmitting}
-              className="mt-5 w-full rounded-md bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-800 disabled:cursor-not-allowed disabled:bg-slate-300"
-            >
-              {isSubmitting ? "Submitting..." : "Submit meter reading"}
-            </button>
           </div>
         </section>
 
         {result ? <ResultCard result={result} householdId={householdId} /> : null}
       </div>
     </main>
+  );
+}
+
+function ConfirmationForm({
+  extraction,
+  meterNumber,
+  reading,
+  confirmed,
+  isBusy,
+  onMeterNumberChange,
+  onReadingChange,
+  onConfirmedChange,
+  onConfirm,
+  onManualFallback,
+}: {
+  extraction: MeterPhotoExtractionResponse;
+  meterNumber: string;
+  reading: string;
+  confirmed: boolean;
+  isBusy: boolean;
+  onMeterNumberChange: (value: string) => void;
+  onReadingChange: (value: string) => void;
+  onConfirmedChange: (value: boolean) => void;
+  onConfirm: () => void;
+  onManualFallback: () => void;
+}) {
+  const showDevelopmentNote =
+    process.env.NODE_ENV !== "production" ||
+    extraction.ai_extraction_method === "development_mock_adapter";
+
+  return (
+    <section className="mt-6 border-t border-slate-200 pt-5">
+      <h2 className="text-lg font-semibold text-slate-950">Confirm Meter Reading</h2>
+      {showDevelopmentNote ? (
+        <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          Development mode: automatic image reading is not connected yet. Enter or confirm the
+          visible meter details manually.
+        </p>
+      ) : null}
+
+      <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+        <InfoItem label="Image freshness" value={labelize(extraction.image_freshness_status)} />
+        <InfoItem label="Image quality" value={labelize(extraction.image_quality_status)} />
+        <InfoItem label="Detected meter number" value={extraction.suggested_meter_number ?? "None"} />
+        <InfoItem
+          label="Detected meter reading"
+          value={
+            extraction.suggested_reading_kL !== null
+              ? `${extraction.suggested_reading_kL.toFixed(3)} kL`
+              : "None"
+          }
+        />
+        <InfoItem label="Confidence" value={`${Math.round(extraction.confidence_score * 100)}%`} />
+        <InfoItem label="Status" value={labelize(extraction.ai_extraction_status)} />
+      </dl>
+
+      <label className="mt-5 block text-sm font-medium text-slate-700">
+        Meter number
+        <input
+          type="text"
+          value={meterNumber}
+          onChange={(event) => onMeterNumberChange(event.target.value)}
+          className="mt-2 min-h-10 w-full rounded-md border border-slate-300 px-3 text-slate-900 outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
+        />
+      </label>
+
+      <label className="mt-4 block text-sm font-medium text-slate-700">
+        Meter reading in kL
+        <input
+          type="number"
+          min="0"
+          step="0.001"
+          value={reading}
+          onChange={(event) => onReadingChange(event.target.value)}
+          className="mt-2 min-h-10 w-full rounded-md border border-slate-300 px-3 text-slate-900 outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
+        />
+      </label>
+
+      <label className="mt-4 flex gap-3 text-sm text-slate-600">
+        <input
+          type="checkbox"
+          checked={confirmed}
+          onChange={(event) => onConfirmedChange(event.target.checked)}
+          className="mt-1"
+        />
+        I confirm that the entered reading matches the uploaded meter photo.
+      </label>
+
+      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        <button
+          type="button"
+          onClick={onConfirm}
+          disabled={isBusy}
+          className="rounded-md bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-800 disabled:cursor-not-allowed disabled:bg-slate-300"
+        >
+          {isBusy ? "Submitting..." : "Confirm and submit reading"}
+        </button>
+        <button
+          type="button"
+          onClick={onManualFallback}
+          disabled={isBusy}
+          className="rounded-md border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:bg-slate-100"
+        >
+          Enter reading manually instead
+        </button>
+      </div>
+    </section>
+  );
+}
+
+function InfoItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+      <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</dt>
+      <dd className="mt-1 font-semibold text-slate-900">{value}</dd>
+    </div>
   );
 }
 
@@ -239,4 +449,8 @@ function ResultCard({
       </Link>
     </section>
   );
+}
+
+function labelize(value: string) {
+  return value.replaceAll("_", " ");
 }

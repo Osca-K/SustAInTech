@@ -109,7 +109,22 @@ def extract_exif_datetime(image: Image.Image) -> datetime | None:
     return None
 
 
-def image_hash_exists(connection: Connection, image_hash_sha256: str) -> bool:
+def image_hash_exists(
+    connection: Connection,
+    image_hash_sha256: str,
+    ignore_submission_id: str | None = None,
+) -> bool:
+    if ignore_submission_id:
+        row = connection.execute(
+            """
+            SELECT 1
+            FROM household_meter_submissions
+            WHERE image_hash_sha256 = ? AND submission_id <> ?
+            """,
+            (image_hash_sha256, ignore_submission_id),
+        ).fetchone()
+        return row is not None
+
     row = connection.execute(
         "SELECT 1 FROM household_meter_submissions WHERE image_hash_sha256 = ?",
         (image_hash_sha256,),
@@ -165,9 +180,11 @@ def validate_submission(
     image: ImageInspection,
     submitted_reading_kL: float,
     submitted_at: datetime,
+    reading_source: str = READING_SOURCE,
+    ignore_submission_id: str | None = None,
 ) -> ValidationResult:
     notes = list(image.notes)
-    if image_hash_exists(connection, image.image_hash_sha256):
+    if image_hash_exists(connection, image.image_hash_sha256, ignore_submission_id):
         return ValidationResult(
             image_hash_sha256=image.image_hash_sha256,
             exif_datetime_original=image.exif_datetime_original,
@@ -176,7 +193,7 @@ def validate_submission(
             usage_since_previous_reading_kL=None,
             elapsed_hours_since_previous_reading=None,
             estimated_daily_usage_kL=None,
-            reading_source=READING_SOURCE,
+            reading_source=reading_source,
             validation_status="duplicate_image",
             validation_notes=["This same meter photo has already been uploaded."],
         )
@@ -222,7 +239,7 @@ def validate_submission(
         usage_since_previous_reading_kL=usage,
         elapsed_hours_since_previous_reading=elapsed_hours,
         estimated_daily_usage_kL=estimated_daily,
-        reading_source=READING_SOURCE,
+        reading_source=reading_source,
         validation_status=validation_status,
         validation_notes=notes,
     )

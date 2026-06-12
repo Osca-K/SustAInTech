@@ -34,6 +34,16 @@ python database\scripts\migrate_add_household_meter_submissions.py
 
 The migration adds resident water-meter photo submissions, storing image paths and metadata only. Raw image bytes are not stored in SQLite.
 
+## Apply Meter Photo Extraction Migration
+
+Existing local SQLite databases can add AI-ready extraction status metadata without resetting:
+
+```powershell
+python database\scripts\migrate_add_ai_extraction_fields.py
+```
+
+The current extraction provider is a development mock. It stores extraction status, method, notes, suggested values, and confidence metadata only. Resident confirmation and deterministic validation are still required before a meter reading becomes trusted operational data.
+
 ## Run Tests
 
 ```powershell

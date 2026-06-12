@@ -70,10 +70,18 @@ Resident meter-photo tracking is now available from each household dashboard:
 http://localhost:3000/household/{household_id}/meter-upload
 ```
 
-Residents upload a recent water-meter photo, enter the visible reading manually, and confirm the value. The backend performs deterministic freshness, duplicate-image, and reading-plausibility checks. Municipal staff can review recent resident submissions at:
+Residents upload a recent water-meter photo, click `Analyse meter photo`, review the suggested meter details, and confirm or correct the visible reading before submission. The current analysis step uses a backend development mock adapter only; no OCR or external AI model is connected yet. The mock keeps the interface ready for a future OCR or vision adapter without changing the resident flow.
+
+The backend performs deterministic freshness, duplicate-image, and reading-plausibility checks after resident confirmation. The original manual submission route remains available as a fallback when extraction is unavailable, low-confidence, or the resident prefers manual entry. Municipal staff can review recent resident submissions at:
 
 ```text
 http://localhost:3000/municipal/meter-submissions
 ```
 
-AI extraction fields are reserved in the database for a later phase; OCR and external AI APIs are not used yet.
+Set the extraction provider with:
+
+```env
+SUSTAINTECH_METER_EXTRACTION_PROVIDER=mock
+```
+
+Resident confirmation remains required before any reading becomes trusted operational data.
