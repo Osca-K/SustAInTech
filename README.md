@@ -23,6 +23,9 @@ Current municipal frontend workflows include:
 - dashboard overview for household, meter, reading, statement, and upload counts;
 - statement uploads with extraction, validation, deduplication, and database import;
 - household search, list view, profile details, meter details, monthly usage chart, and billing-history table.
+- municipal insights inferred dynamically from operational water readings to identify accounts requiring review.
+
+Insights do not read hidden ground-truth labels and do not confirm leaks. They provide a deterministic baseline for future AI explanation agents.
 
 ## Run Locally
 

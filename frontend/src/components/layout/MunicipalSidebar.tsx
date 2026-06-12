@@ -7,7 +7,7 @@ const items = [
   { label: "Overview", href: "/municipal/dashboard", enabled: true },
   { label: "Statement Uploads", href: "/municipal/uploads", enabled: true },
   { label: "Households", href: "/municipal/households", enabled: true },
-  { label: "Insights", href: "#", enabled: false },
+  { label: "Insights", href: "/municipal/insights", enabled: true },
   { label: "Settings", href: "#", enabled: false },
 ];
 

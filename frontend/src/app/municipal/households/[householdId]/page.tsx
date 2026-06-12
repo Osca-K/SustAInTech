@@ -6,9 +6,11 @@ import { MunicipalSidebar } from "@/components/layout/MunicipalSidebar";
 import {
   ApiError,
   getHousehold,
+  getHouseholdInsights,
   getHouseholdMonthlyUsage,
   HouseholdDetails,
   HouseholdMonthlyUsageItem,
+  WaterUsageInsightItem,
 } from "@/lib/api";
 
 type HouseholdDetailsPageProps = {
@@ -54,11 +56,13 @@ export default async function HouseholdDetailsPage({
   const { householdId } = await params;
   let household: HouseholdDetails;
   let monthlyUsage: HouseholdMonthlyUsageItem[];
+  let insights: WaterUsageInsightItem[];
 
   try {
-    [household, monthlyUsage] = await Promise.all([
+    [household, monthlyUsage, insights] = await Promise.all([
       getHousehold(householdId),
       getHouseholdMonthlyUsage(householdId),
+      getHouseholdInsights(householdId),
     ]);
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) {
@@ -138,6 +142,7 @@ export default async function HouseholdDetailsPage({
           </section>
 
           <HouseholdUsageChart data={history} />
+          <HouseholdInsightsPanel insights={insights} />
           <MonthlyUsageTable history={history} />
         </div>
       </main>
@@ -176,6 +181,46 @@ function MetricCard({ label, value }: { label: string; value: string }) {
       <p className="text-xs font-medium uppercase text-slate-500">{label}</p>
       <p className="mt-2 text-2xl font-semibold text-slate-950">{value}</p>
     </div>
+  );
+}
+
+function HouseholdInsightsPanel({
+  insights,
+}: {
+  insights: WaterUsageInsightItem[];
+}) {
+  return (
+    <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-base font-semibold text-slate-950">Usage Insights</h2>
+        <Link
+          href="/municipal/insights"
+          className="text-sm font-medium text-teal-700 hover:text-teal-900"
+        >
+          View all insights
+        </Link>
+      </div>
+      {insights.length ? (
+        <div className="mt-4 space-y-3">
+          {insights.map((insight) => (
+            <div
+              key={insight.insight_id}
+              className="rounded-lg border border-slate-200 bg-slate-50 p-3"
+            >
+              <p className="text-sm font-semibold text-slate-900">{insight.title}</p>
+              <p className="mt-1 text-sm text-slate-600">{insight.summary}</p>
+              <p className="mt-2 text-xs font-medium uppercase text-slate-500">
+                {insight.severity} severity - {insight.statement_month}
+              </p>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="mt-4 text-sm text-slate-500">
+          No unusual patterns detected from the available monthly readings.
+        </p>
+      )}
+    </section>
   );
 }
 

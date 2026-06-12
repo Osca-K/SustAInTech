@@ -118,6 +118,39 @@ export type UploadBatchHistoryItem = {
   duplicate_skipped_count: number;
 };
 
+export type WaterUsageInsightItem = {
+  insight_id: string;
+  insight_type: string;
+  severity: "high" | "medium" | "low";
+  title: string;
+  summary: string;
+  recommended_action: string;
+  household_id: string;
+  account_number: string;
+  customer_name: string;
+  physical_address: string;
+  meter_number: string | null;
+  statement_month: string;
+  current_consumption_kL: number;
+  previous_consumption_kL: number | null;
+  percentage_change: number | null;
+  months_evaluated: number;
+};
+
+export type InsightsSummary = {
+  total_insights: number;
+  high_severity_count: number;
+  medium_severity_count: number;
+  low_severity_count: number;
+  households_requiring_review: number;
+};
+
+export type InsightsParams = {
+  severity?: string;
+  insight_type?: string;
+  household_id?: string;
+};
+
 async function apiGet<T>(path: string): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     cache: "no-store",
@@ -203,6 +236,32 @@ export async function uploadStatements(
 
 export function getUploadBatches() {
   return apiGet<UploadBatchHistoryItem[]>("/api/uploads/batches");
+}
+
+export function getInsightsSummary() {
+  return apiGet<InsightsSummary>("/api/insights/summary");
+}
+
+export function getInsights(params: InsightsParams = {}) {
+  const query = new URLSearchParams();
+  if (params.severity) {
+    query.set("severity", params.severity);
+  }
+  if (params.insight_type) {
+    query.set("insight_type", params.insight_type);
+  }
+  if (params.household_id) {
+    query.set("household_id", params.household_id);
+  }
+
+  const suffix = query.toString() ? `?${query.toString()}` : "";
+  return apiGet<WaterUsageInsightItem[]>(`/api/insights${suffix}`);
+}
+
+export function getHouseholdInsights(householdId: string) {
+  return apiGet<WaterUsageInsightItem[]>(
+    `/api/households/${householdId}/insights`,
+  );
 }
 
 async function readableError(response: Response): Promise<string> {

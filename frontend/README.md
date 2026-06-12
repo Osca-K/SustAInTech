@@ -47,3 +47,11 @@ http://localhost:3000/municipal/households
 ```
 
 The Households section supports search by account number, customer name, or address. Municipal users can review the household list, open a household details page, inspect profile and meter details, view a monthly usage chart, and scan the billing-history table.
+
+## Open Insights
+
+```text
+http://localhost:3000/municipal/insights
+```
+
+The Insights section shows deterministic water-usage patterns inferred dynamically from operational readings. Hidden ground-truth labels are not used. Insights identify accounts that may require municipal review, but they do not confirm leaks. Future AI agents may add explanations and richer recommendations on top of these baseline rules.

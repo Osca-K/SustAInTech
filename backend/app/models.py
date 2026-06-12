@@ -103,3 +103,30 @@ class UploadBatchHistoryItem(BaseModel):
     review_required_count: int
     failed_count: int
     duplicate_skipped_count: int
+
+
+class WaterUsageInsightItem(BaseModel):
+    insight_id: str
+    insight_type: str
+    severity: str
+    title: str
+    summary: str
+    recommended_action: str
+    household_id: str
+    account_number: str
+    customer_name: str
+    physical_address: str
+    meter_number: str | None
+    statement_month: str
+    current_consumption_kL: float
+    previous_consumption_kL: float | None
+    percentage_change: float | None
+    months_evaluated: int
+
+
+class InsightsSummary(BaseModel):
+    total_insights: int
+    high_severity_count: int
+    medium_severity_count: int
+    low_severity_count: int
+    households_requiring_review: int

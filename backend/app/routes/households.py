@@ -1,7 +1,13 @@
 from fastapi import APIRouter, HTTPException, Query
 
 from ..database import get_connection
-from ..models import HouseholdDetails, HouseholdListItem, HouseholdMonthlyUsageItem
+from ..insights.water_usage import detect_water_usage_insights, household_exists
+from ..models import (
+    HouseholdDetails,
+    HouseholdListItem,
+    HouseholdMonthlyUsageItem,
+    WaterUsageInsightItem,
+)
 
 
 router = APIRouter(prefix="/households", tags=["households"])
@@ -110,3 +116,12 @@ def household_monthly_usage(household_id: str) -> list[HouseholdMonthlyUsageItem
             (household_id,),
         ).fetchall()
         return [HouseholdMonthlyUsageItem(**dict(row)) for row in rows]
+
+
+@router.get("/{household_id}/insights", response_model=list[WaterUsageInsightItem])
+def household_insights(household_id: str) -> list[WaterUsageInsightItem]:
+    with get_connection() as connection:
+        if not household_exists(connection, household_id):
+            raise HTTPException(status_code=404, detail="Household not found")
+        insights = detect_water_usage_insights(connection, household_id=household_id)
+        return [WaterUsageInsightItem(**item) for item in insights]
