@@ -18,6 +18,12 @@ This repository separates synthetic document generation from application-layer s
 
 `frontend/` displays the municipal dashboard and statement-upload workflow using the backend API.
 
+Current municipal frontend workflows include:
+
+- dashboard overview for household, meter, reading, statement, and upload counts;
+- statement uploads with extraction, validation, deduplication, and database import;
+- household search, list view, profile details, meter details, monthly usage chart, and billing-history table.
+
 ## Run Locally
 
 Start the backend:

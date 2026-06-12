@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 const items = [
   { label: "Overview", href: "/municipal/dashboard", enabled: true },
   { label: "Statement Uploads", href: "/municipal/uploads", enabled: true },
-  { label: "Households", href: "#", enabled: false },
+  { label: "Households", href: "/municipal/households", enabled: true },
   { label: "Insights", href: "#", enabled: false },
   { label: "Settings", href: "#", enabled: false },
 ];
@@ -27,7 +27,7 @@ export function MunicipalSidebar() {
               key={item.label}
               href={item.href}
               className={`block whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium ${
-                pathname === item.href
+                pathname === item.href || pathname.startsWith(`${item.href}/`)
                   ? "bg-teal-50 text-teal-800"
                   : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
               }`}

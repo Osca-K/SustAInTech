@@ -39,6 +39,56 @@ export type HouseholdListItem = {
   latest_total_due: number | null;
 };
 
+export type HouseholdDetails = {
+  household_id: string;
+  account_number: string;
+  customer_name: string;
+  physical_address: string;
+  stand_number: string;
+  township: string;
+  region: string;
+  ward: string;
+  meter_id: string | null;
+  meter_number: string | null;
+  resource_type: string | null;
+  unit: string | null;
+};
+
+export type HouseholdMonthlyUsageItem = {
+  statement_month: string;
+  statement_month_label: string;
+  reading_period_start: string;
+  reading_period_end: string;
+  billing_days: number;
+  opening_reading_kL: number;
+  closing_reading_kL: number;
+  consumption_kL: number;
+  average_daily_consumption_kL: number;
+  reading_type: string;
+  water_total_including_vat: number;
+  current_charges_including_vat: number;
+  total_due: number;
+  invoice_number: string;
+};
+
+export type HouseholdListParams = {
+  limit?: number;
+  offset?: number;
+  search?: string;
+};
+
+export class ApiError extends Error {
+  status: number;
+
+  constructor(path: string, response: Response) {
+    super(
+      `Backend request failed for ${path}: ${response.status} ${response.statusText}`,
+    );
+    this.name = "ApiError";
+    this.status = response.status;
+  }
+}
+
 export type StatementUploadFileResult = {
   source_pdf_filename: string;
   processing_status: string;
@@ -74,9 +124,7 @@ async function apiGet<T>(path: string): Promise<T> {
   });
 
   if (!response.ok) {
-    throw new Error(
-      `Backend request failed for ${path}: ${response.status} ${response.statusText}`,
-    );
+    throw new ApiError(path, response);
   }
 
   return response.json() as Promise<T>;
@@ -94,8 +142,30 @@ export function getUploadStatuses() {
   return apiGet<UploadStatusSummary[]>("/api/dashboard/upload-statuses");
 }
 
-export function getHouseholds() {
-  return apiGet<HouseholdListItem[]>("/api/households");
+export function getHouseholds(params: HouseholdListParams = {}) {
+  const query = new URLSearchParams();
+  if (params.limit !== undefined) {
+    query.set("limit", String(params.limit));
+  }
+  if (params.offset !== undefined) {
+    query.set("offset", String(params.offset));
+  }
+  if (params.search?.trim()) {
+    query.set("search", params.search.trim());
+  }
+
+  const suffix = query.toString() ? `?${query.toString()}` : "";
+  return apiGet<HouseholdListItem[]>(`/api/households${suffix}`);
+}
+
+export function getHousehold(householdId: string) {
+  return apiGet<HouseholdDetails>(`/api/households/${householdId}`);
+}
+
+export function getHouseholdMonthlyUsage(householdId: string) {
+  return apiGet<HouseholdMonthlyUsageItem[]>(
+    `/api/households/${householdId}/monthly-usage`,
+  );
 }
 
 export async function uploadStatements(
