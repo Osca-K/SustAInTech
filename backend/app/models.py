@@ -258,3 +258,43 @@ class WasteSummary(BaseModel):
     classification_counts: list[WasteClassificationCount]
     top_selected_categories: list[WasteCategoryCount]
     recent_queries: list[WasteQueryHistoryItem]
+
+
+class ImpactWaterActivityItem(BaseModel):
+    submitted_at: str
+    household_id: str
+    customer_name: str
+    validation_status: str
+    submitted_reading_kL: float
+    estimated_daily_usage_kL: float | None
+
+
+class ImpactWasteActivityItem(BaseModel):
+    submitted_at: str
+    household_id: str
+    item_name: str
+    classification: str
+    confidence_level: str
+
+
+class ImpactSummary(BaseModel):
+    total_households: int
+    total_water_statements: int
+    total_meter_submissions: int
+    accepted_meter_submissions: int
+    review_required_meter_submissions: int
+    total_water_usage_kL: float
+    average_household_water_usage_kL: float
+    highest_household_monthly_usage_kL: float
+    water_review_rate_percent: float
+    total_waste_queries: int
+    recyclable_queries: int
+    organic_queries: int
+    e_waste_queries: int
+    hazardous_queries: int
+    reuse_or_donate_queries: int
+    general_waste_queries: int
+    unknown_waste_queries: int
+    waste_diversion_awareness_percent: float
+    recent_water_activity: list[ImpactWaterActivityItem]
+    recent_waste_activity: list[ImpactWasteActivityItem]

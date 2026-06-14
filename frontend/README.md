@@ -105,3 +105,11 @@ http://localhost:3000/municipal/waste
 ```
 
 The municipal waste page shows total queries, classification counts, common selected categories, and recent query summaries.
+
+## Open Impact Dashboard
+
+```text
+http://localhost:3000/municipal/impact
+```
+
+The Impact Dashboard combines water monitoring and waste-sorting awareness metrics. Water metrics come from municipal readings and resident meter submissions. Waste metrics come from household sorting guidance queries. The waste diversion metric is labelled as awareness potential, not actual waste diverted. No new AI feature is added on this page.

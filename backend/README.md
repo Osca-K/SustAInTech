@@ -16,6 +16,8 @@ An optional OpenAI vision adapter is available with `SUSTAINTECH_METER_EXTRACTIO
 
 The waste API provides a deterministic household waste-sorting baseline. It uses a local manual rule engine only, stores household waste queries in SQLite, and returns disposal guidance with preparation steps. It does not use external AI or image recognition yet. Household history is scoped to the selected household; municipal waste endpoints return aggregate trends and recent query summaries.
 
+The impact API combines water and waste summary data for municipal/community reporting. It uses existing operational tables only. Water metrics are based on municipal readings and resident meter submissions. Waste metrics are based on household sorting guidance queries; the diversion percentage is awareness potential, not confirmed physical diversion. No new AI is added by this endpoint.
+
 ## Setup
 
 ```powershell
@@ -76,6 +78,12 @@ Waste sorting:
 POST http://127.0.0.1:8000/api/households/{household_id}/waste-sort
 GET http://127.0.0.1:8000/api/households/{household_id}/waste-queries
 GET http://127.0.0.1:8000/api/waste/summary
+```
+
+Impact summary:
+
+```text
+GET http://127.0.0.1:8000/api/impact/summary
 ```
 
 Environment:

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 
 const items = [
   { label: "Overview", href: "/municipal/dashboard", enabled: true },
+  { label: "Impact Dashboard", href: "/municipal/impact", enabled: true },
   { label: "Statement Uploads", href: "/municipal/uploads", enabled: true },
   { label: "Households", href: "/municipal/households", enabled: true },
   { label: "Insights", href: "/municipal/insights", enabled: true },

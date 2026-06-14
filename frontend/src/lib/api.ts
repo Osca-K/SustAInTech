@@ -274,6 +274,46 @@ export type WasteSummary = {
   recent_queries: WasteQueryHistoryItem[];
 };
 
+export type ImpactWaterActivityItem = {
+  submitted_at: string;
+  household_id: string;
+  customer_name: string;
+  validation_status: string;
+  submitted_reading_kL: number;
+  estimated_daily_usage_kL: number | null;
+};
+
+export type ImpactWasteActivityItem = {
+  submitted_at: string;
+  household_id: string;
+  item_name: string;
+  classification: string;
+  confidence_level: string;
+};
+
+export type ImpactSummary = {
+  total_households: number;
+  total_water_statements: number;
+  total_meter_submissions: number;
+  accepted_meter_submissions: number;
+  review_required_meter_submissions: number;
+  total_water_usage_kL: number;
+  average_household_water_usage_kL: number;
+  highest_household_monthly_usage_kL: number;
+  water_review_rate_percent: number;
+  total_waste_queries: number;
+  recyclable_queries: number;
+  organic_queries: number;
+  e_waste_queries: number;
+  hazardous_queries: number;
+  reuse_or_donate_queries: number;
+  general_waste_queries: number;
+  unknown_waste_queries: number;
+  waste_diversion_awareness_percent: number;
+  recent_water_activity: ImpactWaterActivityItem[];
+  recent_waste_activity: ImpactWasteActivityItem[];
+};
+
 async function apiGet<T>(path: string): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     cache: "no-store",
@@ -508,6 +548,10 @@ export function getHouseholdWasteQueries(householdId: string) {
 
 export function getWasteSummary() {
   return apiGet<WasteSummary>("/api/waste/summary");
+}
+
+export function getImpactSummary() {
+  return apiGet<ImpactSummary>("/api/impact/summary");
 }
 
 async function readableError(response: Response): Promise<string> {
