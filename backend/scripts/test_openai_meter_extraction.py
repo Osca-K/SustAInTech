@@ -1,9 +1,11 @@
 import argparse
+import os
 import sys
 from pathlib import Path
 
 
 BACKEND_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = BACKEND_ROOT.parent
 sys.path.insert(0, str(BACKEND_ROOT))
 
 from app import config  # noqa: E402
@@ -22,6 +24,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
+    load_root_env()
     if not config.get_openai_api_key():
         raise SystemExit("OPENAI_API_KEY is required for this live smoke test.")
 
@@ -34,6 +37,18 @@ def main() -> None:
     print("extraction_notes:")
     for note in result.extraction_notes:
         print(f"- {note}")
+
+
+def load_root_env() -> None:
+    env_path = REPO_ROOT / ".env"
+    if not env_path.exists():
+        return
+    for line in env_path.read_text(encoding="utf-8").splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#") or "=" not in stripped:
+            continue
+        name, value = stripped.split("=", 1)
+        os.environ.setdefault(name.strip(), value.strip())
 
 
 if __name__ == "__main__":
