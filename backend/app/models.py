@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel
 
 
@@ -318,6 +320,30 @@ class MunicipalElectricitySummary(BaseModel):
     average_cost_per_kWh: float
     low_balance_households: int
     recent_topups: list[MunicipalElectricityTopupItem]
+
+
+class RecommendationItem(BaseModel):
+    recommendation_id: str
+    household_id: str | None
+    created_at: str
+    module: Literal["water", "electricity", "waste", "combined"]
+    severity: Literal["info", "low", "medium", "high"]
+    title: str
+    message: str
+    action_label: str
+    action_url: str
+    evidence: dict[str, str | int | float | bool | None]
+    audience: Literal["household", "municipal", "both"]
+    status: Literal["active", "resolved"]
+
+
+class HouseholdRecommendationsResponse(BaseModel):
+    household_id: str
+    recommendations: list[RecommendationItem]
+
+
+class MunicipalRecommendationsResponse(BaseModel):
+    recommendations: list[RecommendationItem]
 
 
 class ImpactWaterActivityItem(BaseModel):

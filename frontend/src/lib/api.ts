@@ -325,6 +325,35 @@ export type MunicipalElectricitySummary = {
   recent_topups: MunicipalElectricityTopupItem[];
 };
 
+export type RecommendationModule = "water" | "electricity" | "waste" | "combined";
+export type RecommendationSeverity = "info" | "low" | "medium" | "high";
+export type RecommendationAudience = "household" | "municipal" | "both";
+export type RecommendationStatus = "active" | "resolved";
+
+export type RecommendationItem = {
+  recommendation_id: string;
+  household_id: string | null;
+  created_at: string;
+  module: RecommendationModule;
+  severity: RecommendationSeverity;
+  title: string;
+  message: string;
+  action_label: string;
+  action_url: string;
+  evidence: Record<string, string | number | boolean | null>;
+  audience: RecommendationAudience;
+  status: RecommendationStatus;
+};
+
+export type HouseholdRecommendationsResponse = {
+  household_id: string;
+  recommendations: RecommendationItem[];
+};
+
+export type MunicipalRecommendationsResponse = {
+  recommendations: RecommendationItem[];
+};
+
 export type ImpactWaterActivityItem = {
   submitted_at: string;
   household_id: string;
@@ -641,6 +670,16 @@ export function getHouseholdElectricitySummary(householdId: string) {
 
 export function getMunicipalElectricitySummary() {
   return apiGet<MunicipalElectricitySummary>("/api/electricity/summary");
+}
+
+export function getHouseholdRecommendations(householdId: string) {
+  return apiGet<HouseholdRecommendationsResponse>(
+    `/api/households/${householdId}/recommendations`,
+  );
+}
+
+export function getMunicipalRecommendations() {
+  return apiGet<MunicipalRecommendationsResponse>("/api/recommendations/municipal");
 }
 
 export function getImpactSummary() {

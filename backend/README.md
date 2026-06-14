@@ -18,6 +18,8 @@ The waste API provides a deterministic household waste-sorting baseline. It uses
 
 The electricity API stores resident-entered prepaid electricity top-ups. It records amounts, purchased units, optional current meter balances, suppliers, household-private notes, and at most the last 4 characters of a prepaid token. Full prepaid tokens are never stored. Household endpoints return private history and estimates; municipal endpoints return aggregate trends only and omit notes and token references. No external AI is used for electricity tracking.
 
+The recommendations API generates deterministic cross-module alerts from existing water, electricity, and waste data. Household recommendations are scoped to one household and provide practical resident next steps. Municipal recommendations are aggregate/community-level signals. The API does not call external AI and does not expose internal image paths, image hashes, raw notes, or full token references.
+
 The impact API combines water, waste, and prepaid electricity summary data for municipal/community reporting. It uses existing operational tables only. Water metrics are based on municipal readings and resident meter submissions. Waste metrics are based on household sorting guidance queries; the diversion percentage is awareness potential, not confirmed physical diversion. Electricity metrics are resident-entered top-up awareness signals, not grid optimization. No new AI is added by this endpoint.
 
 ## Setup
@@ -89,6 +91,13 @@ POST http://127.0.0.1:8000/api/households/{household_id}/electricity-topups
 GET http://127.0.0.1:8000/api/households/{household_id}/electricity-topups
 GET http://127.0.0.1:8000/api/households/{household_id}/electricity-summary
 GET http://127.0.0.1:8000/api/electricity/summary
+```
+
+Recommendations:
+
+```text
+GET http://127.0.0.1:8000/api/households/{household_id}/recommendations
+GET http://127.0.0.1:8000/api/recommendations/municipal
 ```
 
 Impact summary:

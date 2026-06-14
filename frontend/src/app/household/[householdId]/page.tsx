@@ -3,10 +3,12 @@ import { notFound } from "next/navigation";
 
 import { RecentMeterTrackingChart } from "@/components/household/RecentMeterTrackingChart";
 import { ResidentUsageChart } from "@/components/household/ResidentUsageChart";
+import { HouseholdRecommendationsPanel } from "@/components/recommendations/HouseholdRecommendationsPanel";
 import {
   ApiError,
   getHousehold,
   getHouseholdInsights,
+  getHouseholdRecommendations,
   getHouseholdMeterSubmissions,
   getHouseholdMeterTrackingSummary,
   getHouseholdMonthlyUsage,
@@ -14,6 +16,7 @@ import {
   HouseholdDetails,
   HouseholdMonthlyUsageItem,
   MeterSubmissionHistoryItem,
+  RecommendationItem,
   WaterUsageInsightItem,
 } from "@/lib/api";
 import {
@@ -58,14 +61,23 @@ export default async function ResidentDashboardPage({
   let insights: WaterUsageInsightItem[];
   let trackingSummary: HouseholdTrackingSummary;
   let meterSubmissions: MeterSubmissionHistoryItem[];
+  let recommendations: RecommendationItem[];
 
   try {
-    [household, monthlyUsage, insights, trackingSummary, meterSubmissions] = await Promise.all([
+    [
+      household,
+      monthlyUsage,
+      insights,
+      trackingSummary,
+      meterSubmissions,
+      recommendations,
+    ] = await Promise.all([
       getHousehold(householdId),
       getHouseholdMonthlyUsage(householdId),
       getHouseholdInsights(householdId),
       getHouseholdMeterTrackingSummary(householdId),
       getHouseholdMeterSubmissions(householdId),
+      getHouseholdRecommendations(householdId).then((response) => response.recommendations),
     ]);
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) {
@@ -116,6 +128,8 @@ export default async function ResidentDashboardPage({
             value={household.meter_number ?? "Not available"}
           />
         </section>
+
+        <HouseholdRecommendationsPanel recommendations={recommendations} />
 
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(320px,0.8fr)]">
           <ResidentUsageChart data={history} />

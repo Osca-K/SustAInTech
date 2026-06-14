@@ -122,6 +122,18 @@ http://localhost:3000/municipal/electricity
 
 The municipal electricity page shows aggregate top-up counts, spend, units, average cost per kWh, and low-balance households. It does not expose household notes or token references.
 
+## Open Recommendations
+
+Household dashboards show practical recommendations generated from that household's water, prepaid electricity, and waste activity. These recommendations are rule-based and do not use external AI.
+
+Municipal users can review aggregate community recommendations at:
+
+```text
+http://localhost:3000/municipal/recommendations
+```
+
+Municipal recommendations are grouped by water, electricity, waste, and combined signals. They are generated from existing operational data and do not expose private image paths, image hashes, household notes, or token references.
+
 ## Open Impact Dashboard
 
 ```text

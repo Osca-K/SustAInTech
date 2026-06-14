@@ -5,11 +5,17 @@ import { MunicipalSidebar } from "@/components/layout/MunicipalSidebar";
 import {
   ImpactWaterActivityItem,
   ImpactWasteActivityItem,
+  RecommendationItem,
   getImpactSummary,
+  getMunicipalRecommendations,
 } from "@/lib/api";
 
 export default async function MunicipalImpactPage() {
-  const summary = await getImpactSummary();
+  const [summary, recommendationResponse] = await Promise.all([
+    getImpactSummary(),
+    getMunicipalRecommendations(),
+  ]);
+  const topRecommendations = recommendationResponse.recommendations.slice(0, 3);
   const wasteChartData = [
     { label: "Recyclable", value: summary.recyclable_queries },
     { label: "Organic", value: summary.organic_queries },
@@ -151,6 +157,8 @@ export default async function MunicipalImpactPage() {
             emptyText="No prepaid electricity top-up data is available yet."
           />
 
+          <CommunityRecommendations recommendations={topRecommendations} />
+
           <section className="grid gap-6 xl:grid-cols-2">
             <WaterActivityTable activity={summary.recent_water_activity} />
             <WasteActivityTable activity={summary.recent_waste_activity} />
@@ -158,6 +166,55 @@ export default async function MunicipalImpactPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+function CommunityRecommendations({
+  recommendations,
+}: {
+  recommendations: RecommendationItem[];
+}) {
+  return (
+    <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="text-xl font-semibold text-slate-950">
+            Community Recommendations
+          </h2>
+          <p className="mt-1 text-sm text-slate-600">
+            Rule-based alerts and opportunities across active resource modules.
+          </p>
+        </div>
+        <a
+          href="/municipal/recommendations"
+          className="text-sm font-semibold text-teal-700 hover:text-teal-900"
+        >
+          View all recommendations
+        </a>
+      </div>
+      {recommendations.length ? (
+        <div className="mt-4 grid gap-4 lg:grid-cols-3">
+          {recommendations.map((item) => (
+            <article
+              key={item.recommendation_id}
+              className="rounded-lg border border-slate-200 bg-slate-50 p-4"
+            >
+              <p className="text-xs font-semibold uppercase text-teal-700">
+                {labelize(item.module)} / {labelize(item.severity)}
+              </p>
+              <h3 className="mt-2 text-sm font-semibold text-slate-950">
+                {item.title}
+              </h3>
+              <p className="mt-2 text-sm text-slate-600">{item.message}</p>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <p className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-3 text-sm text-emerald-800">
+          No active community recommendations right now.
+        </p>
+      )}
+    </section>
   );
 }
 
