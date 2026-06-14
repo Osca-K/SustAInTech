@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import APP_NAME, APP_VERSION
-from .routes import dashboard, health, households, insights, meter_submissions, uploads
+from .routes import dashboard, health, households, insights, meter_submissions, uploads, waste
 
 
 app = FastAPI(title=APP_NAME, version=APP_VERSION)
@@ -18,3 +18,4 @@ app.include_router(households.router, prefix="/api")
 app.include_router(insights.router, prefix="/api")
 app.include_router(meter_submissions.router, prefix="/api")
 app.include_router(uploads.router, prefix="/api")
+app.include_router(waste.router, prefix="/api")

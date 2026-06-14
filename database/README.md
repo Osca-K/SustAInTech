@@ -44,6 +44,16 @@ python database\scripts\migrate_add_ai_extraction_fields.py
 
 The current extraction provider is a development mock. It stores extraction status, method, notes, suggested values, and confidence metadata only. Resident confirmation and deterministic validation are still required before a meter reading becomes trusted operational data.
 
+## Apply Waste Query Migration
+
+Existing local SQLite databases can add household waste sorting history without resetting:
+
+```powershell
+python database\scripts\migrate_add_household_waste_queries.py
+```
+
+The migration adds deterministic waste-sorting query records. No waste images are stored in this milestone. Household query history is scoped to each household, and municipal views use aggregate trends.
+
 ## Run Tests
 
 ```powershell

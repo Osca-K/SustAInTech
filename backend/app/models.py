@@ -207,3 +207,54 @@ class MeterPhotoExtractionConfirmationRequest(BaseModel):
     confirmed_reading_kL: float
     resident_corrected_value: bool
     resident_confirmed: bool
+
+
+class WasteSortRequest(BaseModel):
+    item_name: str
+    item_description: str | None = None
+    selected_category: str | None = None
+
+
+class WasteSortResult(BaseModel):
+    query_id: str
+    household_id: str
+    submitted_at: str
+    item_name: str
+    item_description: str | None
+    selected_category: str | None
+    classification: str
+    disposal_guidance: str
+    preparation_steps: list[str]
+    confidence_level: str
+    source: str
+
+
+class WasteQueryHistoryItem(BaseModel):
+    query_id: str
+    household_id: str
+    submitted_at: str
+    item_name: str
+    item_description: str | None
+    selected_category: str | None
+    classification: str
+    disposal_guidance: str
+    preparation_steps: list[str]
+    confidence_level: str
+    source: str
+
+
+class WasteClassificationCount(BaseModel):
+    classification: str
+    count: int
+
+
+class WasteCategoryCount(BaseModel):
+    selected_category: str
+    count: int
+
+
+class WasteSummary(BaseModel):
+    total_queries: int
+    classification_counts: list[WasteClassificationCount]
+    top_selected_categories: list[WasteCategoryCount]
+    recent_queries: list[WasteQueryHistoryItem]

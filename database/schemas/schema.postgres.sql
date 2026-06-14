@@ -133,3 +133,19 @@ CREATE TABLE IF NOT EXISTS household_meter_submissions (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+CREATE TABLE IF NOT EXISTS household_waste_queries (
+  query_id TEXT PRIMARY KEY,
+  household_id TEXT NOT NULL REFERENCES households(household_id),
+  submitted_at TIMESTAMPTZ NOT NULL,
+  item_name TEXT NOT NULL,
+  item_description TEXT,
+  selected_category TEXT,
+  classification TEXT NOT NULL CHECK (classification IN ('recyclable', 'general_waste', 'organic', 'hazardous', 'e_waste', 'reuse_or_donate', 'unknown')),
+  disposal_guidance TEXT NOT NULL,
+  preparation_steps_json JSONB NOT NULL,
+  confidence_level TEXT NOT NULL CHECK (confidence_level IN ('high', 'medium', 'low')),
+  source TEXT NOT NULL CHECK (source IN ('resident_selected', 'manual_rule_engine', 'future_ai')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);

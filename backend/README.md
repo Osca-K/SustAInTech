@@ -14,6 +14,8 @@ The meter photo extraction API adds an AI-ready resident confirmation flow. The 
 
 An optional OpenAI vision adapter is available with `SUSTAINTECH_METER_EXTRACTION_PROVIDER=openai_vision`. It uses the OpenAI Responses API with structured output to suggest visible meter details from the uploaded image. It never sends the API key to the frontend, does not validate plausibility, does not classify leaks, and does not create trusted readings without resident confirmation.
 
+The waste API provides a deterministic household waste-sorting baseline. It uses a local manual rule engine only, stores household waste queries in SQLite, and returns disposal guidance with preparation steps. It does not use external AI or image recognition yet. Household history is scoped to the selected household; municipal waste endpoints return aggregate trends and recent query summaries.
+
 ## Setup
 
 ```powershell
@@ -66,6 +68,14 @@ POST http://127.0.0.1:8000/api/households/{household_id}/meter-submissions
 GET http://127.0.0.1:8000/api/households/{household_id}/meter-submissions
 GET http://127.0.0.1:8000/api/households/{household_id}/meter-tracking-summary
 GET http://127.0.0.1:8000/api/meter-submissions
+```
+
+Waste sorting:
+
+```text
+POST http://127.0.0.1:8000/api/households/{household_id}/waste-sort
+GET http://127.0.0.1:8000/api/households/{household_id}/waste-queries
+GET http://127.0.0.1:8000/api/waste/summary
 ```
 
 Environment:

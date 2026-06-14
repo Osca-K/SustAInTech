@@ -141,3 +141,20 @@ CREATE TABLE IF NOT EXISTS household_meter_submissions (
   FOREIGN KEY (household_id) REFERENCES households(household_id),
   FOREIGN KEY (meter_id) REFERENCES water_meters(meter_id)
 );
+
+CREATE TABLE IF NOT EXISTS household_waste_queries (
+  query_id TEXT PRIMARY KEY,
+  household_id TEXT NOT NULL,
+  submitted_at TEXT NOT NULL,
+  item_name TEXT NOT NULL,
+  item_description TEXT,
+  selected_category TEXT,
+  classification TEXT NOT NULL CHECK (classification IN ('recyclable', 'general_waste', 'organic', 'hazardous', 'e_waste', 'reuse_or_donate', 'unknown')),
+  disposal_guidance TEXT NOT NULL,
+  preparation_steps_json TEXT NOT NULL,
+  confidence_level TEXT NOT NULL CHECK (confidence_level IN ('high', 'medium', 'low')),
+  source TEXT NOT NULL CHECK (source IN ('resident_selected', 'manual_rule_engine', 'future_ai')),
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+  FOREIGN KEY (household_id) REFERENCES households(household_id)
+);

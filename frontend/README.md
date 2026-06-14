@@ -89,3 +89,19 @@ SUSTAINTECH_OPENAI_VISION_MODEL=gpt-5.5
 Use `SUSTAINTECH_METER_EXTRACTION_PROVIDER=openai_vision` only when the backend has `OPENAI_API_KEY` configured.
 
 Resident confirmation remains required before any reading becomes trusted operational data.
+
+## Open Waste Sorting Assistant
+
+```text
+http://localhost:3000/household/{household_id}/waste
+```
+
+Residents can enter a waste item, optional description, or selected category and receive deterministic sorting guidance. This first milestone does not use external AI or image recognition. Query history is private to the selected household.
+
+Municipal users can review aggregate waste-query trends at:
+
+```text
+http://localhost:3000/municipal/waste
+```
+
+The municipal waste page shows total queries, classification counts, common selected categories, and recent query summaries.

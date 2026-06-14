@@ -235,6 +235,45 @@ export type MunicipalMeterSubmissionsParams = {
   offset?: number;
 };
 
+export type WasteSortPayload = {
+  item_name: string;
+  item_description?: string | null;
+  selected_category?: string | null;
+};
+
+export type WasteSortResult = {
+  query_id: string;
+  household_id: string;
+  submitted_at: string;
+  item_name: string;
+  item_description: string | null;
+  selected_category: string | null;
+  classification: string;
+  disposal_guidance: string;
+  preparation_steps: string[];
+  confidence_level: string;
+  source: string;
+};
+
+export type WasteQueryHistoryItem = WasteSortResult;
+
+export type WasteClassificationCount = {
+  classification: string;
+  count: number;
+};
+
+export type WasteCategoryCount = {
+  selected_category: string;
+  count: number;
+};
+
+export type WasteSummary = {
+  total_queries: number;
+  classification_counts: WasteClassificationCount[];
+  top_selected_categories: WasteCategoryCount[];
+  recent_queries: WasteQueryHistoryItem[];
+};
+
 async function apiGet<T>(path: string): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     cache: "no-store",
@@ -441,6 +480,34 @@ export function getMunicipalMeterSubmissions(
 
   const suffix = query.toString() ? `?${query.toString()}` : "";
   return apiGet<MunicipalMeterSubmissionListItem[]>(`/api/meter-submissions${suffix}`);
+}
+
+export async function sortHouseholdWasteItem(
+  householdId: string,
+  payload: WasteSortPayload,
+): Promise<WasteSortResult> {
+  const response = await fetch(`${API_BASE_URL}/api/households/${householdId}/waste-sort`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const message = await readableError(response);
+    throw new Error(message || `Waste sorting failed: ${response.status}`);
+  }
+
+  return response.json() as Promise<WasteSortResult>;
+}
+
+export function getHouseholdWasteQueries(householdId: string) {
+  return apiGet<WasteQueryHistoryItem[]>(
+    `/api/households/${householdId}/waste-queries`,
+  );
+}
+
+export function getWasteSummary() {
+  return apiGet<WasteSummary>("/api/waste/summary");
 }
 
 async function readableError(response: Response): Promise<string> {

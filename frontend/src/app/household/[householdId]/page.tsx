@@ -122,9 +122,10 @@ export default async function ResidentDashboardPage({
           <LatestBillCard latest={stats.latest} />
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-6 lg:grid-cols-3">
           <ResidentInsightsCard insights={insights} />
           <MeterUploadCard householdId={householdId} />
+          <WasteSortingCard householdId={householdId} />
         </div>
 
         <ResidentTrackingSection
@@ -262,6 +263,26 @@ function MeterUploadCard({ householdId }: { householdId: string }) {
         className="mt-5 inline-flex rounded-md bg-teal-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-800"
       >
         Upload meter photo
+      </Link>
+    </section>
+  );
+}
+
+function WasteSortingCard({ householdId }: { householdId: string }) {
+  return (
+    <section className="rounded-xl border border-emerald-200 bg-white p-5 shadow-sm">
+      <h2 className="text-lg font-semibold text-slate-950">
+        Waste Sorting Assistant
+      </h2>
+      <p className="mt-2 text-sm text-slate-600">
+        Find out whether an item should be recycled, composted, donated, or
+        handled safely.
+      </p>
+      <Link
+        href={`/household/${householdId}/waste`}
+        className="mt-5 inline-flex rounded-md bg-teal-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-800"
+      >
+        Sort waste item
       </Link>
     </section>
   );

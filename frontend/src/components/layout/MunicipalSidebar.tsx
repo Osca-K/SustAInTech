@@ -9,6 +9,7 @@ const items = [
   { label: "Households", href: "/municipal/households", enabled: true },
   { label: "Insights", href: "/municipal/insights", enabled: true },
   { label: "Meter Submissions", href: "/municipal/meter-submissions", enabled: true },
+  { label: "Waste Trends", href: "/municipal/waste", enabled: true },
   { label: "Settings", href: "#", enabled: false },
 ];
 
