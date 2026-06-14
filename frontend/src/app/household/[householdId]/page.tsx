@@ -122,10 +122,11 @@ export default async function ResidentDashboardPage({
           <LatestBillCard latest={stats.latest} />
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-3">
+        <div className="grid gap-6 lg:grid-cols-4">
           <ResidentInsightsCard insights={insights} />
           <MeterUploadCard householdId={householdId} />
           <WasteSortingCard householdId={householdId} />
+          <ElectricityTrackingCard householdId={householdId} />
         </div>
 
         <ResidentTrackingSection
@@ -283,6 +284,25 @@ function WasteSortingCard({ householdId }: { householdId: string }) {
         className="mt-5 inline-flex rounded-md bg-teal-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-800"
       >
         Sort waste item
+      </Link>
+    </section>
+  );
+}
+
+function ElectricityTrackingCard({ householdId }: { householdId: string }) {
+  return (
+    <section className="rounded-xl border border-emerald-200 bg-white p-5 shadow-sm">
+      <h2 className="text-lg font-semibold text-slate-950">
+        Prepaid Electricity Tracker
+      </h2>
+      <p className="mt-2 text-sm text-slate-600">
+        Record token purchases and monitor estimated electricity usage.
+      </p>
+      <Link
+        href={`/household/${householdId}/electricity`}
+        className="mt-5 inline-flex rounded-md bg-teal-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-800"
+      >
+        Track electricity
       </Link>
     </section>
   );

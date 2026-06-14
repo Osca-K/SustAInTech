@@ -107,6 +107,20 @@ def seed_impact_data(db_path: Path) -> None:
             """,
             (json.dumps(["Rinse if needed."]),),
         )
+        connection.execute(
+            """
+            INSERT INTO household_electricity_topups (
+              topup_id, household_id, submitted_at, purchase_date,
+              amount_zar, units_kWh, meter_balance_kWh, supplier,
+              token_reference_last4, notes
+            ) VALUES (
+              'impact_electricity_topup', 'impact_household',
+              '2026-02-01T10:00:00+00:00', '2026-02-01',
+              50.0, 20.0, 8.0, 'City Power', '1234',
+              'private impact note'
+            )
+            """
+        )
         connection.commit()
 
 
@@ -158,6 +172,16 @@ def test_impact_summary_waste_fields_exist(impact_client):
     assert data["total_waste_queries"] == 1
     assert data["recyclable_queries"] == 1
     assert data["waste_diversion_awareness_percent"] == 100.0
+
+
+def test_impact_summary_electricity_fields_exist(impact_client):
+    data = impact_client.get("/api/impact/summary").json()
+
+    assert data["total_electricity_topups"] == 1
+    assert data["total_electricity_spend_zar"] == 50.0
+    assert data["total_electricity_units_kWh"] == 20.0
+    assert data["households_with_electricity_topups"] == 1
+    assert data["low_balance_households"] == 1
 
 
 def test_impact_percentages_handle_zero_denominators(empty_impact_client):

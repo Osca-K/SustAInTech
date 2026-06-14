@@ -27,7 +27,8 @@ Current municipal frontend workflows include:
 - household portal demo with resident profile selection, monthly water usage, latest bill summary, and resident-friendly usage insights.
 - household water meter-photo tracking with resident-confirmed readings, deterministic freshness checks, duplicate-image checks, optional OpenAI vision suggestions, mock photo-analysis fallback, and municipal submission review.
 - household waste-sorting assistant with deterministic guidance, household-private query history, and simple municipal aggregate trends.
-- unified impact dashboard combining water monitoring and waste-sorting awareness metrics for municipal/community review.
+- household prepaid electricity tracking with resident-entered top-ups, household-private notes, last-4 token references only, and aggregate municipal trends.
+- unified impact dashboard combining water monitoring, waste-sorting awareness, and prepaid electricity activity metrics for municipal/community review.
 
 Insights do not read hidden ground-truth labels and do not confirm leaks. They provide a deterministic baseline for future AI explanation agents.
 
@@ -39,7 +40,9 @@ Real OpenAI vision extraction is optional. Configure `SUSTAINTECH_METER_EXTRACTI
 
 Waste sorting starts with a deterministic manual-rule baseline. Residents enter an item name, optional description, or selected category and receive guidance for recyclable, general waste, organic, hazardous, e-waste, reuse/donation, or unknown items. No external AI or image recognition is used for waste yet. Household waste query history is private to that household, while municipal tools show aggregate trends only.
 
-The impact dashboard combines municipal water readings, resident meter submissions, and waste sorting queries. Water metrics reflect operational readings and resident submissions. Waste metrics reflect awareness and education activity; the diversion percentage is awareness potential, not confirmed physical waste diverted. No new AI was added for this dashboard milestone.
+Prepaid electricity tracking starts with resident-entered purchases only. The app stores purchase date, amount, units, optional current balance, supplier, notes, and at most the last 4 characters of a token for household reference. It never stores a full prepaid token. Municipal views use aggregate top-up metrics and do not expose household notes or token references. No external AI is used for electricity tracking.
+
+The impact dashboard combines municipal water readings, resident meter submissions, waste sorting queries, and prepaid electricity top-ups. Water metrics reflect operational readings and resident submissions. Waste metrics reflect awareness and education activity; the diversion percentage is awareness potential, not confirmed physical waste diverted. Electricity metrics reflect resident-entered top-up awareness, not grid optimization. No new AI was added for this dashboard milestone.
 
 ## Run Locally
 

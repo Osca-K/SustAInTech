@@ -274,6 +274,57 @@ export type WasteSummary = {
   recent_queries: WasteQueryHistoryItem[];
 };
 
+export type ElectricityTopupPayload = {
+  purchase_date: string;
+  amount_zar: number;
+  units_kWh: number;
+  meter_balance_kWh: number | null;
+  supplier: string | null;
+  token_reference_last4: string | null;
+  notes: string | null;
+};
+
+export type ElectricityTopupResult = ElectricityTopupPayload & {
+  topup_id: string;
+  household_id: string;
+  submitted_at: string;
+};
+
+export type ElectricityTopupHistoryItem = ElectricityTopupResult;
+
+export type HouseholdElectricitySummary = {
+  household_id: string;
+  total_spend: number;
+  total_units: number;
+  average_cost_per_kWh: number;
+  estimated_daily_spend: number;
+  estimated_daily_usage_kWh: number;
+  latest_balance_kWh: number | null;
+  low_balance_warning: boolean;
+  recent_topups: ElectricityTopupHistoryItem[];
+};
+
+export type MunicipalElectricityTopupItem = {
+  topup_id: string;
+  household_id: string;
+  submitted_at: string;
+  purchase_date: string;
+  amount_zar: number;
+  units_kWh: number;
+  meter_balance_kWh: number | null;
+  supplier: string | null;
+};
+
+export type MunicipalElectricitySummary = {
+  total_households_with_topups: number;
+  total_topups: number;
+  total_spend_zar: number;
+  total_units_kWh: number;
+  average_cost_per_kWh: number;
+  low_balance_households: number;
+  recent_topups: MunicipalElectricityTopupItem[];
+};
+
 export type ImpactWaterActivityItem = {
   submitted_at: string;
   household_id: string;
@@ -310,6 +361,11 @@ export type ImpactSummary = {
   general_waste_queries: number;
   unknown_waste_queries: number;
   waste_diversion_awareness_percent: number;
+  total_electricity_topups: number;
+  total_electricity_spend_zar: number;
+  total_electricity_units_kWh: number;
+  households_with_electricity_topups: number;
+  low_balance_households: number;
   recent_water_activity: ImpactWaterActivityItem[];
   recent_waste_activity: ImpactWasteActivityItem[];
 };
@@ -548,6 +604,43 @@ export function getHouseholdWasteQueries(householdId: string) {
 
 export function getWasteSummary() {
   return apiGet<WasteSummary>("/api/waste/summary");
+}
+
+export async function createHouseholdElectricityTopup(
+  householdId: string,
+  payload: ElectricityTopupPayload,
+): Promise<ElectricityTopupResult> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/households/${householdId}/electricity-topups`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    },
+  );
+
+  if (!response.ok) {
+    const message = await readableError(response);
+    throw new Error(message || `Electricity top-up failed: ${response.status}`);
+  }
+
+  return response.json() as Promise<ElectricityTopupResult>;
+}
+
+export function getHouseholdElectricityTopups(householdId: string) {
+  return apiGet<ElectricityTopupHistoryItem[]>(
+    `/api/households/${householdId}/electricity-topups`,
+  );
+}
+
+export function getHouseholdElectricitySummary(householdId: string) {
+  return apiGet<HouseholdElectricitySummary>(
+    `/api/households/${householdId}/electricity-summary`,
+  );
+}
+
+export function getMunicipalElectricitySummary() {
+  return apiGet<MunicipalElectricitySummary>("/api/electricity/summary");
 }
 
 export function getImpactSummary() {

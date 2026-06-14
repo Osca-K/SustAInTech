@@ -23,6 +23,11 @@ export default async function MunicipalImpactPage() {
     { label: "Accepted", value: summary.accepted_meter_submissions },
     { label: "Review", value: summary.review_required_meter_submissions },
   ];
+  const electricityData = [
+    { label: "Top-ups", value: summary.total_electricity_topups },
+    { label: "Households", value: summary.households_with_electricity_topups },
+    { label: "Low balance", value: summary.low_balance_households },
+  ];
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-950 lg:flex">
@@ -56,6 +61,7 @@ export default async function MunicipalImpactPage() {
             <SummaryCard label="Water statements processed" value={summary.total_water_statements} />
             <SummaryCard label="Meter submissions" value={summary.total_meter_submissions} />
             <SummaryCard label="Waste sorting queries" value={summary.total_waste_queries} />
+            <SummaryCard label="Electricity top-ups" value={summary.total_electricity_topups} />
           </section>
 
           <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
@@ -115,6 +121,35 @@ export default async function MunicipalImpactPage() {
               emptyText="No resident meter submissions are available yet."
             />
           </section>
+
+          <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <h2 className="text-xl font-semibold text-slate-950">
+                  Prepaid Electricity Awareness
+                </h2>
+                <p className="mt-1 text-sm text-slate-600">
+                  Prepaid electricity tracking helps households understand top-up patterns and identify low-balance situations earlier.
+                </p>
+              </div>
+              <p className="text-sm font-medium text-teal-700">
+                Low-balance households: {summary.low_balance_households}
+              </p>
+            </div>
+            <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+              <SummaryCard label="Total top-ups" value={summary.total_electricity_topups} />
+              <SummaryCard label="Households with top-ups" value={summary.households_with_electricity_topups} />
+              <SummaryCard label="Total spend" value={`R ${summary.total_electricity_spend_zar.toFixed(2)}`} />
+              <SummaryCard label="Total units" value={`${summary.total_electricity_units_kWh.toFixed(1)} kWh`} />
+              <SummaryCard label="Low balance" value={summary.low_balance_households} />
+            </div>
+          </section>
+
+          <ImpactBarChart
+            title="Prepaid electricity activity"
+            data={electricityData}
+            emptyText="No prepaid electricity top-up data is available yet."
+          />
 
           <section className="grid gap-6 xl:grid-cols-2">
             <WaterActivityTable activity={summary.recent_water_activity} />

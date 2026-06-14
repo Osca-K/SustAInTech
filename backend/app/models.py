@@ -260,6 +260,66 @@ class WasteSummary(BaseModel):
     recent_queries: list[WasteQueryHistoryItem]
 
 
+class ElectricityTopupCreate(BaseModel):
+    purchase_date: str
+    amount_zar: float
+    units_kWh: float
+    meter_balance_kWh: float | None = None
+    supplier: str | None = None
+    token_reference_last4: str | None = None
+    notes: str | None = None
+
+
+class ElectricityTopupResult(BaseModel):
+    topup_id: str
+    household_id: str
+    submitted_at: str
+    purchase_date: str
+    amount_zar: float
+    units_kWh: float
+    meter_balance_kWh: float | None
+    supplier: str | None
+    token_reference_last4: str | None
+    notes: str | None
+
+
+class ElectricityTopupHistoryItem(ElectricityTopupResult):
+    pass
+
+
+class HouseholdElectricitySummary(BaseModel):
+    household_id: str
+    total_spend: float
+    total_units: float
+    average_cost_per_kWh: float
+    estimated_daily_spend: float
+    estimated_daily_usage_kWh: float
+    latest_balance_kWh: float | None
+    low_balance_warning: bool
+    recent_topups: list[ElectricityTopupHistoryItem]
+
+
+class MunicipalElectricityTopupItem(BaseModel):
+    topup_id: str
+    household_id: str
+    submitted_at: str
+    purchase_date: str
+    amount_zar: float
+    units_kWh: float
+    meter_balance_kWh: float | None
+    supplier: str | None
+
+
+class MunicipalElectricitySummary(BaseModel):
+    total_households_with_topups: int
+    total_topups: int
+    total_spend_zar: float
+    total_units_kWh: float
+    average_cost_per_kWh: float
+    low_balance_households: int
+    recent_topups: list[MunicipalElectricityTopupItem]
+
+
 class ImpactWaterActivityItem(BaseModel):
     submitted_at: str
     household_id: str
@@ -296,5 +356,10 @@ class ImpactSummary(BaseModel):
     general_waste_queries: int
     unknown_waste_queries: int
     waste_diversion_awareness_percent: float
+    total_electricity_topups: int
+    total_electricity_spend_zar: float
+    total_electricity_units_kWh: float
+    households_with_electricity_topups: int
+    low_balance_households: int
     recent_water_activity: list[ImpactWaterActivityItem]
     recent_waste_activity: list[ImpactWasteActivityItem]

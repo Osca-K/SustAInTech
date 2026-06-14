@@ -11,6 +11,7 @@ const items = [
   { label: "Insights", href: "/municipal/insights", enabled: true },
   { label: "Meter Submissions", href: "/municipal/meter-submissions", enabled: true },
   { label: "Waste Trends", href: "/municipal/waste", enabled: true },
+  { label: "Electricity Trends", href: "/municipal/electricity", enabled: true },
   { label: "Settings", href: "#", enabled: false },
 ];
 

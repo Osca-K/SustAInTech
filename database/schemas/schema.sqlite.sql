@@ -158,3 +158,19 @@ CREATE TABLE IF NOT EXISTS household_waste_queries (
   updated_at TEXT NOT NULL DEFAULT (datetime('now')),
   FOREIGN KEY (household_id) REFERENCES households(household_id)
 );
+
+CREATE TABLE IF NOT EXISTS household_electricity_topups (
+  topup_id TEXT PRIMARY KEY,
+  household_id TEXT NOT NULL,
+  submitted_at TEXT NOT NULL,
+  purchase_date TEXT NOT NULL,
+  amount_zar REAL NOT NULL CHECK (amount_zar >= 0),
+  units_kWh REAL NOT NULL CHECK (units_kWh >= 0),
+  meter_balance_kWh REAL CHECK (meter_balance_kWh IS NULL OR meter_balance_kWh >= 0),
+  supplier TEXT,
+  token_reference_last4 TEXT CHECK (token_reference_last4 IS NULL OR length(token_reference_last4) <= 4),
+  notes TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+  FOREIGN KEY (household_id) REFERENCES households(household_id)
+);

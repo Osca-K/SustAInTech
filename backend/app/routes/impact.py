@@ -100,6 +100,34 @@ def impact_summary() -> ImpactSummary:
             LIMIT 5
             """
         ).fetchall()
+        electricity_aggregate = connection.execute(
+            """
+            SELECT COUNT(*) AS total_topups,
+                   COUNT(DISTINCT household_id) AS households,
+                   COALESCE(SUM(amount_zar), 0) AS total_spend,
+                   COALESCE(SUM(units_kWh), 0) AS total_units
+            FROM household_electricity_topups
+            """
+        ).fetchone()
+        low_balance_households = int(
+            scalar(
+                connection,
+                """
+                WITH ranked AS (
+                  SELECT household_id, meter_balance_kWh,
+                         ROW_NUMBER() OVER (
+                           PARTITION BY household_id
+                           ORDER BY purchase_date DESC, submitted_at DESC
+                         ) AS rank
+                  FROM household_electricity_topups
+                  WHERE meter_balance_kWh IS NOT NULL
+                )
+                SELECT COUNT(*)
+                FROM ranked
+                WHERE rank = 1 AND meter_balance_kWh < 10
+                """,
+            )
+        )
 
     diversion_awareness = recyclable + organic + e_waste + hazardous + reuse_or_donate
     return ImpactSummary(
@@ -127,6 +155,11 @@ def impact_summary() -> ImpactSummary:
             diversion_awareness,
             total_waste_queries,
         ),
+        total_electricity_topups=int(electricity_aggregate["total_topups"] or 0),
+        total_electricity_spend_zar=round(float(electricity_aggregate["total_spend"] or 0), 2),
+        total_electricity_units_kWh=round(float(electricity_aggregate["total_units"] or 0), 3),
+        households_with_electricity_topups=int(electricity_aggregate["households"] or 0),
+        low_balance_households=low_balance_households,
         recent_water_activity=[
             ImpactWaterActivityItem(**dict(row)) for row in recent_water_rows
         ],

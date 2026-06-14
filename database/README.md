@@ -54,6 +54,16 @@ python database\scripts\migrate_add_household_waste_queries.py
 
 The migration adds deterministic waste-sorting query records. No waste images are stored in this milestone. Household query history is scoped to each household, and municipal views use aggregate trends.
 
+## Apply Electricity Top-Up Migration
+
+Existing local SQLite databases can add resident-entered prepaid electricity top-up history without resetting:
+
+```powershell
+python database\scripts\migrate_add_household_electricity_topups.py
+```
+
+The migration stores amounts, purchased units, optional balance, supplier, notes, and at most the last 4 characters of a token. Full prepaid tokens are never stored. Household views can read private notes and token references; municipal views use aggregate values only.
+
 ## Run Tests
 
 ```powershell

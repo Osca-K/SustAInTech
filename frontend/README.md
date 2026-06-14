@@ -106,10 +106,26 @@ http://localhost:3000/municipal/waste
 
 The municipal waste page shows total queries, classification counts, common selected categories, and recent query summaries.
 
+## Open Prepaid Electricity Tracker
+
+```text
+http://localhost:3000/household/{household_id}/electricity
+```
+
+Residents can enter prepaid electricity purchases, purchased units, optional balance, supplier, and notes. The form warns residents not to enter a full prepaid token; only the last 4 characters may be saved for reference. Household estimates are based only on resident-entered values and do not use external AI.
+
+Municipal users can review aggregate prepaid electricity trends at:
+
+```text
+http://localhost:3000/municipal/electricity
+```
+
+The municipal electricity page shows aggregate top-up counts, spend, units, average cost per kWh, and low-balance households. It does not expose household notes or token references.
+
 ## Open Impact Dashboard
 
 ```text
 http://localhost:3000/municipal/impact
 ```
 
-The Impact Dashboard combines water monitoring and waste-sorting awareness metrics. Water metrics come from municipal readings and resident meter submissions. Waste metrics come from household sorting guidance queries. The waste diversion metric is labelled as awareness potential, not actual waste diverted. No new AI feature is added on this page.
+The Impact Dashboard combines water monitoring, waste-sorting awareness, and prepaid electricity awareness metrics. Water metrics come from municipal readings and resident meter submissions. Waste metrics come from household sorting guidance queries. Electricity metrics come from resident-entered prepaid top-ups and low-balance balances. The waste diversion metric is labelled as awareness potential, not actual waste diverted. No new AI feature is added on this page.
