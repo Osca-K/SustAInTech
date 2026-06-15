@@ -1,8 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { ChangeEvent, use, useMemo, useRef, useState } from "react";
 
+import { ResidentMobileShell } from "@/components/resident/ResidentMobileShell";
+import { ResidentPageHeader } from "@/components/resident/ResidentPageHeader";
+import { ResidentSectionCard } from "@/components/resident/ResidentSectionCard";
 import {
   MeterPhotoExtractionResponse,
   MeterSubmissionResult,
@@ -188,32 +190,17 @@ export default function MeterUploadPage({ params }: MeterUploadPageProps) {
   }
 
   return (
-    <main className="min-h-screen bg-emerald-50/40 text-slate-950">
-      <nav className="border-b border-emerald-100 bg-white/90">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <p className="text-lg font-semibold text-slate-950">SustAInTech</p>
-          <p className="text-sm font-medium text-teal-700">Household Portal</p>
-        </div>
-      </nav>
+    <ResidentMobileShell householdId={householdId}>
+      <div className="space-y-5 bg-[radial-gradient(circle_at_top,#bae6fd_0,#ecfeff_44%,#f8fafc_78%)] px-4 py-5">
+        <ResidentPageHeader
+          eyebrow="Water meter"
+          title="Upload Meter Photo"
+          subtitle="Track your water usage between monthly municipal statements."
+          accent="from-cyan-100 via-white to-sky-50"
+        />
 
-      <div className="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
-        <header className="rounded-xl border border-emerald-100 bg-white p-5 shadow-sm">
-          <Link
-            href={`/household/${householdId}`}
-            className="text-sm font-medium text-teal-700 hover:text-teal-900"
-          >
-            Return to household dashboard
-          </Link>
-          <h1 className="mt-3 text-3xl font-semibold text-slate-950">
-            Upload Water Meter Photo
-          </h1>
-          <p className="mt-2 text-sm text-slate-600">
-            Track your water usage between monthly municipal statements.
-          </p>
-        </header>
-
-        <section className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
-          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <section className="space-y-5">
+          <ResidentSectionCard>
             <h2 className="text-lg font-semibold text-slate-950">Before you submit</h2>
             <ol className="mt-4 list-decimal space-y-2 pl-5 text-sm text-slate-600">
               <li>Take a clear photo of the water meter.</li>
@@ -221,21 +208,21 @@ export default function MeterUploadPage({ params }: MeterUploadPageProps) {
               <li>Use a recent photo taken today.</li>
               <li>Enter the visible reading and confirm it before submitting.</li>
             </ol>
-          </div>
+          </ResidentSectionCard>
 
-          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="grid gap-3 sm:grid-cols-2">
+          <ResidentSectionCard>
+            <div className="grid grid-cols-1 gap-3">
               <button
                 type="button"
                 onClick={() => cameraInputRef.current?.click()}
-                className="rounded-md bg-teal-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-800"
+                className="rounded-full bg-teal-700 px-4 py-3 text-sm font-semibold text-white hover:bg-teal-800"
               >
                 Take photo now
               </button>
               <button
                 type="button"
                 onClick={() => galleryInputRef.current?.click()}
-                className="rounded-md border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                className="rounded-full border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
               >
                 Choose from gallery
               </button>
@@ -262,7 +249,7 @@ export default function MeterUploadPage({ params }: MeterUploadPageProps) {
                 <img
                   src={previewUrl}
                   alt="Selected meter"
-                  className="max-h-80 w-full rounded-lg border border-slate-200 object-contain"
+                  className="max-h-80 w-full rounded-3xl border border-slate-200 object-contain"
                 />
                 <p className="mt-2 text-sm text-slate-500">{file?.name}</p>
               </div>
@@ -272,7 +259,7 @@ export default function MeterUploadPage({ params }: MeterUploadPageProps) {
               type="button"
               onClick={analysePhoto}
               disabled={isBusy || !file}
-              className="mt-5 w-full rounded-md bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-800 disabled:cursor-not-allowed disabled:bg-slate-300"
+              className="mt-5 w-full rounded-full bg-teal-700 px-4 py-3 text-sm font-semibold text-white hover:bg-teal-800 disabled:cursor-not-allowed disabled:bg-slate-300"
             >
               {uploadState === "analysing" ? "Analysing..." : "Analyse meter photo"}
             </button>
@@ -297,12 +284,12 @@ export default function MeterUploadPage({ params }: MeterUploadPageProps) {
                 {error}
               </p>
             ) : null}
-          </div>
+          </ResidentSectionCard>
         </section>
 
-        {result ? <ResultCard result={result} householdId={householdId} /> : null}
+        {result ? <ResultCard result={result} /> : null}
       </div>
-    </main>
+    </ResidentMobileShell>
   );
 }
 
@@ -357,7 +344,7 @@ function ConfirmationForm({
         Please confirm or correct the suggested values before submitting.
       </p>
 
-      <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+      <dl className="mt-4 grid grid-cols-1 gap-3 text-sm">
         <InfoItem label="Image freshness" value={labelize(extraction.image_freshness_status)} />
         <InfoItem label="Image quality" value={labelize(extraction.image_quality_status)} />
         <InfoItem label="Detected meter number" value={extraction.suggested_meter_number ?? "None"} />
@@ -390,7 +377,7 @@ function ConfirmationForm({
           type="text"
           value={meterNumber}
           onChange={(event) => onMeterNumberChange(event.target.value)}
-          className="mt-2 min-h-10 w-full rounded-md border border-slate-300 px-3 text-slate-900 outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
+          className="mt-2 min-h-11 w-full rounded-2xl border border-slate-300 px-3 text-slate-900 outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
         />
       </label>
 
@@ -402,7 +389,7 @@ function ConfirmationForm({
           step="0.001"
           value={reading}
           onChange={(event) => onReadingChange(event.target.value)}
-          className="mt-2 min-h-10 w-full rounded-md border border-slate-300 px-3 text-slate-900 outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
+          className="mt-2 min-h-11 w-full rounded-2xl border border-slate-300 px-3 text-slate-900 outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
         />
       </label>
 
@@ -416,12 +403,12 @@ function ConfirmationForm({
         I confirm that the entered reading matches the uploaded meter photo.
       </label>
 
-      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+      <div className="mt-5 grid grid-cols-1 gap-3">
         <button
           type="button"
           onClick={onConfirm}
           disabled={isBusy}
-          className="rounded-md bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-800 disabled:cursor-not-allowed disabled:bg-slate-300"
+          className="rounded-full bg-teal-700 px-4 py-3 text-sm font-semibold text-white hover:bg-teal-800 disabled:cursor-not-allowed disabled:bg-slate-300"
         >
           {isBusy ? "Submitting..." : "Confirm and submit reading"}
         </button>
@@ -429,7 +416,7 @@ function ConfirmationForm({
           type="button"
           onClick={onManualFallback}
           disabled={isBusy}
-          className="rounded-md border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:bg-slate-100"
+          className="rounded-full border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:bg-slate-100"
         >
           Enter reading manually instead
         </button>
@@ -447,16 +434,10 @@ function InfoItem({ label, value }: { label: string; value: string }) {
   );
 }
 
-function ResultCard({
-  result,
-  householdId,
-}: {
-  result: MeterSubmissionResult;
-  householdId: string;
-}) {
+function ResultCard({ result }: { result: MeterSubmissionResult }) {
   const copy = resultCopy[result.validation_status] ?? resultCopy.review_required;
   return (
-    <section className={`rounded-xl border p-5 shadow-sm ${copy.className}`}>
+    <section className={`rounded-3xl border p-5 shadow-sm ${copy.className}`}>
       <h2 className="text-lg font-semibold">{copy.title}</h2>
       <p className="mt-2 text-sm">{copy.message}</p>
       {result.validation_notes.length ? (
@@ -466,12 +447,6 @@ function ResultCard({
           ))}
         </ul>
       ) : null}
-      <Link
-        href={`/household/${householdId}`}
-        className="mt-5 inline-flex rounded-md bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm"
-      >
-        Return to household dashboard
-      </Link>
     </section>
   );
 }

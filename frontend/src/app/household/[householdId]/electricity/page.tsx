@@ -1,8 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import { FormEvent, ReactNode, use, useEffect, useState } from "react";
 
+import { ResidentAlertCard } from "@/components/resident/ResidentAlertCard";
+import { ResidentMetricCard } from "@/components/resident/ResidentMetricCard";
+import { ResidentMetricStrip } from "@/components/resident/ResidentMetricStrip";
+import { ResidentMobileShell } from "@/components/resident/ResidentMobileShell";
+import { ResidentPageHeader } from "@/components/resident/ResidentPageHeader";
+import { ResidentSectionCard } from "@/components/resident/ResidentSectionCard";
 import {
   ElectricityTopupHistoryItem,
   HouseholdElectricitySummary,
@@ -28,7 +33,7 @@ const emptySummary: HouseholdElectricitySummary = {
   recent_topups: [],
 };
 const inputClass =
-  "min-h-10 w-full rounded-md border border-slate-300 px-3 text-slate-900 outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100";
+  "min-h-11 w-full rounded-2xl border border-slate-200 bg-white px-3 text-slate-900 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-100";
 
 export default function HouseholdElectricityPage({ params }: ElectricityPageProps) {
   const { householdId } = use(params);
@@ -102,43 +107,26 @@ export default function HouseholdElectricityPage({ params }: ElectricityPageProp
   }
 
   return (
-    <main className="min-h-screen bg-emerald-50/40 text-slate-950">
-      <nav className="border-b border-emerald-100 bg-white/90">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <p className="text-lg font-semibold text-slate-950">SustAInTech</p>
-          <p className="text-sm font-medium text-teal-700">Household Portal</p>
-        </div>
-      </nav>
-
-      <div className="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
-        <header className="rounded-xl border border-emerald-100 bg-white p-5 shadow-sm">
-          <Link
-            href={`/household/${householdId}`}
-            className="text-sm font-medium text-teal-700 hover:text-teal-900"
-          >
-            Return to household dashboard
-          </Link>
-          <h1 className="mt-3 text-3xl font-semibold text-slate-950">
-            Prepaid Electricity Tracker
-          </h1>
-          <p className="mt-2 max-w-2xl text-sm text-slate-600">
-            Record prepaid electricity purchases and monitor estimated household usage.
-          </p>
-        </header>
+    <ResidentMobileShell householdId={householdId}>
+      <div className="space-y-5 bg-[radial-gradient(circle_at_top,#fde68a_0,#fff7ed_42%,#f8fafc_78%)] px-4 py-5">
+        <ResidentPageHeader
+          eyebrow="Electricity"
+          title="Prepaid Tracker"
+          subtitle="Record prepaid purchases and monitor estimated household usage."
+          accent="from-amber-100 via-white to-orange-50"
+        />
 
         {summary.low_balance_warning ? (
-          <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">
+          <ResidentAlertCard tone="warning">
             Latest entered meter balance is below 10 kWh. Consider topping up soon.
-          </p>
+          </ResidentAlertCard>
         ) : null}
 
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
-          <SummaryCard label="Total spend" value={formatCurrency(summary.total_spend)} />
-          <SummaryCard label="Total units" value={`${summary.total_units.toFixed(1)} kWh`} />
-          <SummaryCard label="Average cost per kWh" value={`R ${summary.average_cost_per_kWh.toFixed(3)}`} />
-          <SummaryCard label="Estimated daily spend" value={formatCurrency(summary.estimated_daily_spend)} />
-          <SummaryCard label="Estimated daily usage" value={`${summary.estimated_daily_usage_kWh.toFixed(1)} kWh`} />
-          <SummaryCard
+        <ResidentMetricStrip>
+          <ResidentMetricCard label="Total spend" value={formatCurrency(summary.total_spend)} accent="text-amber-800" />
+          <ResidentMetricCard label="Total units" value={`${summary.total_units.toFixed(1)} kWh`} />
+          <ResidentMetricCard label="Daily spend" value={formatCurrency(summary.estimated_daily_spend)} />
+          <ResidentMetricCard
             label="Latest balance"
             value={
               summary.latest_balance_kWh === null
@@ -146,17 +134,17 @@ export default function HouseholdElectricityPage({ params }: ElectricityPageProp
                 : `${summary.latest_balance_kWh.toFixed(1)} kWh`
             }
           />
-        </section>
+        </ResidentMetricStrip>
 
-        <section className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
+        <section className="space-y-5">
           <form
             onSubmit={onSubmit}
-            className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+            className="rounded-3xl border border-white/80 bg-white/90 p-5 shadow-sm"
           >
             <h2 className="text-lg font-semibold text-slate-950">
               Save electricity purchase
             </h2>
-            <p className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+            <p className="mt-2 rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
               Do not enter your full prepaid token number. Only the last 4 digits may be saved for reference.
             </p>
 
@@ -225,12 +213,12 @@ export default function HouseholdElectricityPage({ params }: ElectricityPageProp
             </Field>
 
             {error ? (
-              <p className="mt-4 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
+              <p className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
                 {error}
               </p>
             ) : null}
             {message ? (
-              <p className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+              <p className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
                 {message}
               </p>
             ) : null}
@@ -238,7 +226,7 @@ export default function HouseholdElectricityPage({ params }: ElectricityPageProp
             <button
               type="submit"
               disabled={isSubmitting}
-              className="mt-5 w-full rounded-md bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-800 disabled:cursor-not-allowed disabled:bg-slate-300"
+              className="mt-5 w-full rounded-full bg-amber-600 px-4 py-3 text-sm font-semibold text-white hover:bg-amber-700 disabled:cursor-not-allowed disabled:bg-slate-300"
             >
               {isSubmitting ? "Saving..." : "Save electricity purchase"}
             </button>
@@ -247,7 +235,7 @@ export default function HouseholdElectricityPage({ params }: ElectricityPageProp
           <HistoryTable topups={summary.recent_topups} />
         </section>
       </div>
-    </main>
+    </ResidentMobileShell>
   );
 }
 
@@ -260,65 +248,49 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
-function SummaryCard({ label, value }: { label: string; value: string }) {
+function HistoryTable({ topups }: { topups: ElectricityTopupHistoryItem[] }) {
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-      <p className="text-xs font-medium uppercase text-slate-500">{label}</p>
-      <p className="mt-2 break-words text-xl font-semibold text-slate-950">{value}</p>
-    </div>
+    <ResidentSectionCard>
+      <h2 className="text-lg font-semibold text-slate-950">Purchase history</h2>
+      <div className="mt-4 space-y-3">
+        {topups.length ? (
+          topups.map((topup) => (
+            <article key={topup.topup_id} className="rounded-2xl bg-slate-50 p-4 text-sm">
+              <div className="flex items-start justify-between gap-3">
+                <p className="font-semibold text-slate-950">{topup.purchase_date}</p>
+                <p className="font-semibold text-amber-800">{formatCurrency(topup.amount_zar)}</p>
+              </div>
+              <dl className="mt-3 space-y-2 text-slate-600">
+                <HistoryRow label="Units" value={`${topup.units_kWh.toFixed(1)} kWh`} />
+                <HistoryRow
+                  label="Balance"
+                  value={
+                    topup.meter_balance_kWh === null
+                      ? "Not entered"
+                      : `${topup.meter_balance_kWh.toFixed(1)} kWh`
+                  }
+                />
+                <HistoryRow label="Supplier" value={topup.supplier ?? "Not entered"} />
+                <HistoryRow label="Token ref" value={topup.token_reference_last4 ?? "Not saved"} />
+              </dl>
+            </article>
+          ))
+        ) : (
+          <p className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-500">
+            No electricity purchases have been saved yet.
+          </p>
+        )}
+      </div>
+    </ResidentSectionCard>
   );
 }
 
-function HistoryTable({ topups }: { topups: ElectricityTopupHistoryItem[] }) {
+function HistoryRow({ label, value }: { label: string; value: string }) {
   return (
-    <section className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-      <table className="min-w-full divide-y divide-slate-200 text-sm">
-        <thead className="bg-slate-50 text-left text-xs font-semibold uppercase text-slate-500">
-          <tr>
-            <th className="px-4 py-3">Date</th>
-            <th className="px-4 py-3">Amount</th>
-            <th className="px-4 py-3">Units</th>
-            <th className="px-4 py-3">Balance</th>
-            <th className="px-4 py-3">Supplier</th>
-            <th className="px-4 py-3">Token ref</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-slate-100">
-          {topups.length ? (
-            topups.map((topup) => (
-              <tr key={topup.topup_id}>
-                <td className="whitespace-nowrap px-4 py-3 text-slate-600">
-                  {topup.purchase_date}
-                </td>
-                <td className="whitespace-nowrap px-4 py-3 text-slate-600">
-                  {formatCurrency(topup.amount_zar)}
-                </td>
-                <td className="whitespace-nowrap px-4 py-3 text-slate-600">
-                  {topup.units_kWh.toFixed(1)} kWh
-                </td>
-                <td className="whitespace-nowrap px-4 py-3 text-slate-600">
-                  {topup.meter_balance_kWh === null
-                    ? "Not entered"
-                    : `${topup.meter_balance_kWh.toFixed(1)} kWh`}
-                </td>
-                <td className="whitespace-nowrap px-4 py-3 text-slate-600">
-                  {topup.supplier ?? "Not entered"}
-                </td>
-                <td className="whitespace-nowrap px-4 py-3 text-slate-600">
-                  {topup.token_reference_last4 ?? "Not saved"}
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td className="px-4 py-6 text-slate-500" colSpan={6}>
-                No electricity purchases have been saved yet.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </section>
+    <div className="flex items-center justify-between gap-3">
+      <dt>{label}</dt>
+      <dd className="text-right font-semibold text-slate-900">{value}</dd>
+    </div>
   );
 }
 

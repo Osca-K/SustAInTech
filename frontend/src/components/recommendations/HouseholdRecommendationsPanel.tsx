@@ -16,7 +16,7 @@ export function HouseholdRecommendationsPanel({
   recommendations: RecommendationItem[];
 }) {
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="rounded-3xl border border-white/80 bg-white/90 p-5 shadow-sm">
       <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2 className="text-lg font-semibold text-slate-950">
@@ -29,11 +29,11 @@ export function HouseholdRecommendationsPanel({
       </div>
 
       {recommendations.length ? (
-        <div className="mt-4 grid gap-4 lg:grid-cols-3">
+        <div className="mt-4 space-y-3">
           {recommendations.slice(0, 6).map((item) => (
             <article
               key={item.recommendation_id}
-              className={`rounded-lg border p-4 ${severityClassNames[item.severity]}`}
+              className={`rounded-2xl border p-4 ${severityClassNames[item.severity]}`}
             >
               <div className="flex items-center justify-between gap-3">
                 <p className="text-xs font-semibold uppercase">

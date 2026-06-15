@@ -4,6 +4,12 @@ import { notFound } from "next/navigation";
 import { RecentMeterTrackingChart } from "@/components/household/RecentMeterTrackingChart";
 import { ResidentUsageChart } from "@/components/household/ResidentUsageChart";
 import { HouseholdRecommendationsPanel } from "@/components/recommendations/HouseholdRecommendationsPanel";
+import { ResidentActionTile } from "@/components/resident/ResidentActionTile";
+import { ResidentHeroCard } from "@/components/resident/ResidentHeroCard";
+import { ResidentMetricCard } from "@/components/resident/ResidentMetricCard";
+import { ResidentMetricStrip } from "@/components/resident/ResidentMetricStrip";
+import { ResidentMobileShell } from "@/components/resident/ResidentMobileShell";
+import { ResidentSectionCard } from "@/components/resident/ResidentSectionCard";
 import {
   ApiError,
   getHousehold,
@@ -92,10 +98,9 @@ export default async function ResidentDashboardPage({
   const stats = usageStats(history);
 
   return (
-    <main className="min-h-screen bg-emerald-50/40 text-slate-950">
-      <ResidentNav />
-      <div className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
-        <header className="rounded-xl border border-emerald-100 bg-white p-5 shadow-sm">
+    <ResidentMobileShell householdId={householdId}>
+      <div className="space-y-5 bg-[radial-gradient(circle_at_top,#d1fae5_0,#f8fafc_58%)] px-4 py-5">
+        <ResidentHeroCard accent="from-emerald-100 via-white to-cyan-50">
           <Link
             href="/household"
             className="text-sm font-medium text-teal-700 hover:text-teal-900"
@@ -108,35 +113,35 @@ export default async function ResidentDashboardPage({
           <p className="mt-2 text-sm text-slate-600">
             Here is your latest household water-usage summary.
           </p>
-        </header>
+        </ResidentHeroCard>
 
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <SummaryCard
+        <ResidentMetricStrip>
+          <ResidentMetricCard
             label="Latest water usage"
             value={formatConsumption(stats.latest?.consumption_kL)}
           />
-          <SummaryCard
+          <ResidentMetricCard
             label="Average monthly usage"
             value={formatConsumption(stats.averageUsage)}
           />
-          <SummaryCard
+          <ResidentMetricCard
             label="Latest municipal bill"
             value={formatCurrency(stats.latest?.total_due)}
           />
-          <SummaryCard
+          <ResidentMetricCard
             label="Meter number"
             value={household.meter_number ?? "Not available"}
           />
-        </section>
+        </ResidentMetricStrip>
 
         <HouseholdRecommendationsPanel recommendations={recommendations} />
 
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(320px,0.8fr)]">
+        <div className="space-y-5">
           <ResidentUsageChart data={history} />
           <LatestBillCard latest={stats.latest} />
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3">
           <ResidentInsightsCard insights={insights} />
           <MeterUploadCard householdId={householdId} />
           <WasteSortingCard householdId={householdId} />
@@ -148,33 +153,13 @@ export default async function ResidentDashboardPage({
           submissions={meterSubmissions}
         />
       </div>
-    </main>
-  );
-}
-
-function ResidentNav() {
-  return (
-    <nav className="border-b border-emerald-100 bg-white/90">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-        <p className="text-lg font-semibold text-slate-950">SustAInTech</p>
-        <p className="text-sm font-medium text-teal-700">Household Portal</p>
-      </div>
-    </nav>
-  );
-}
-
-function SummaryCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <p className="text-xs font-medium uppercase text-slate-500">{label}</p>
-      <p className="mt-2 text-2xl font-semibold text-slate-950">{value}</p>
-    </div>
+    </ResidentMobileShell>
   );
 }
 
 function LatestBillCard({ latest }: { latest: HouseholdMonthlyUsageItem | undefined }) {
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <ResidentSectionCard>
       <h2 className="text-lg font-semibold text-slate-950">
         Latest Municipal Statement
       </h2>
@@ -199,7 +184,7 @@ function LatestBillCard({ latest }: { latest: HouseholdMonthlyUsageItem | undefi
         Your municipal total may include water, sanitation, property rates, and
         refuse charges.
       </p>
-    </section>
+    </ResidentSectionCard>
   );
 }
 
@@ -220,7 +205,7 @@ function ResidentInsightsCard({
   const status = residentUsageStatus(insights);
 
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <ResidentSectionCard>
       <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="text-lg font-semibold text-slate-950">Usage Insights</h2>
@@ -259,66 +244,40 @@ function ResidentInsightsCard({
           Your recent water usage appears stable.
         </p>
       )}
-    </section>
+    </ResidentSectionCard>
   );
 }
 
 function MeterUploadCard({ householdId }: { householdId: string }) {
   return (
-    <section className="rounded-xl border border-teal-200 bg-white p-5 shadow-sm">
-      <h2 className="text-lg font-semibold text-slate-950">
-        Track Daily Water Usage
-      </h2>
-      <p className="mt-2 text-sm text-slate-600">
-        Upload a recent meter photo to monitor your water consumption between
-        municipal statements.
-      </p>
-      <Link
-        href={`/household/${householdId}/meter-upload`}
-        className="mt-5 inline-flex rounded-md bg-teal-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-800"
-      >
-        Upload meter photo
-      </Link>
-    </section>
+    <ResidentActionTile
+      href={`/household/${householdId}/meter-upload`}
+      title="Track Daily Water Usage"
+      description="Upload a recent meter photo to monitor consumption between statements."
+      accent="text-teal-800"
+    />
   );
 }
 
 function WasteSortingCard({ householdId }: { householdId: string }) {
   return (
-    <section className="rounded-xl border border-emerald-200 bg-white p-5 shadow-sm">
-      <h2 className="text-lg font-semibold text-slate-950">
-        Waste Sorting Assistant
-      </h2>
-      <p className="mt-2 text-sm text-slate-600">
-        Find out whether an item should be recycled, composted, donated, or
-        handled safely.
-      </p>
-      <Link
-        href={`/household/${householdId}/waste`}
-        className="mt-5 inline-flex rounded-md bg-teal-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-800"
-      >
-        Sort waste item
-      </Link>
-    </section>
+    <ResidentActionTile
+      href={`/household/${householdId}/waste`}
+      title="Waste Sorting Assistant"
+      description="Check whether an item should be recycled, composted, donated, or handled safely."
+      accent="text-emerald-800"
+    />
   );
 }
 
 function ElectricityTrackingCard({ householdId }: { householdId: string }) {
   return (
-    <section className="rounded-xl border border-emerald-200 bg-white p-5 shadow-sm">
-      <h2 className="text-lg font-semibold text-slate-950">
-        Prepaid Electricity Tracker
-      </h2>
-      <p className="mt-2 text-sm text-slate-600">
-        Record token purchases and monitor estimated electricity usage.
-      </p>
-      <Link
-        href={`/household/${householdId}/electricity`}
-        className="mt-5 inline-flex rounded-md bg-teal-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-800"
-      >
-        Track electricity
-      </Link>
-    </section>
+    <ResidentActionTile
+      href={`/household/${householdId}/electricity`}
+      title="Prepaid Electricity Tracker"
+      description="Record token purchases and monitor estimated electricity usage."
+      accent="text-amber-800"
+    />
   );
 }
 
@@ -331,62 +290,55 @@ function ResidentTrackingSection({
 }) {
   return (
     <section className="space-y-6">
-      <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <ResidentSectionCard>
         <h2 className="text-lg font-semibold text-slate-950">
           Recent Water Tracking
         </h2>
-        <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        <div className="mt-4 grid grid-cols-2 gap-3">
           <SummaryMini label="Latest meter reading" value={formatConsumption(summary.latest_reading_kL)} />
           <SummaryMini label="Latest upload date" value={summary.latest_submission_at ?? "No uploads yet"} />
           <SummaryMini label="Usage since previous reading" value={formatConsumption(summary.usage_since_previous_reading_kL)} />
           <SummaryMini label="Estimated daily usage" value={formatConsumption(summary.estimated_daily_usage_kL)} />
           <SummaryMini label="Validation status" value={submissions[0]?.validation_status ?? "No submissions"} />
         </div>
-      </div>
+      </ResidentSectionCard>
       <RecentMeterTrackingChart submissions={submissions} />
-      <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-        <table className="min-w-full divide-y divide-slate-200 text-sm">
-          <thead className="bg-slate-50 text-left text-xs font-semibold uppercase text-slate-500">
-            <tr>
-              <th className="px-4 py-3">Date</th>
-              <th className="px-4 py-3">Meter reading</th>
-              <th className="px-4 py-3">Usage since previous reading</th>
-              <th className="px-4 py-3">Estimated daily usage</th>
-              <th className="px-4 py-3">Status</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {submissions.length ? (
-              submissions.map((submission) => (
-                <tr key={submission.submission_id}>
-                  <td className="whitespace-nowrap px-4 py-3 text-slate-600">
-                    {submission.submitted_at}
-                  </td>
-                  <td className="whitespace-nowrap px-4 py-3 text-slate-600">
-                    {formatConsumption(submission.submitted_reading_kL)}
-                  </td>
-                  <td className="whitespace-nowrap px-4 py-3 text-slate-600">
-                    {formatConsumption(submission.usage_since_previous_reading_kL)}
-                  </td>
-                  <td className="whitespace-nowrap px-4 py-3 text-slate-600">
-                    {formatConsumption(submission.estimated_daily_usage_kL)}
-                  </td>
-                  <td className="whitespace-nowrap px-4 py-3 font-medium text-slate-700">
+      <ResidentSectionCard>
+        <h2 className="text-lg font-semibold text-slate-950">Meter reading history</h2>
+        <div className="mt-4 space-y-3">
+          {submissions.length ? (
+            submissions.map((submission) => (
+              <article key={submission.submission_id} className="rounded-2xl bg-slate-50 p-4 text-sm">
+                <div className="flex items-start justify-between gap-3">
+                  <p className="font-semibold text-slate-950">{submission.submitted_at}</p>
+                  <span className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-slate-600">
                     {submission.validation_status}
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td className="px-4 py-6 text-slate-500" colSpan={5}>
-                  No household meter photos have been submitted yet.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+                  </span>
+                </div>
+                <dl className="mt-3 space-y-2 text-slate-600">
+                  <CompactRow label="Meter reading" value={formatConsumption(submission.submitted_reading_kL)} />
+                  <CompactRow label="Usage since previous" value={formatConsumption(submission.usage_since_previous_reading_kL)} />
+                  <CompactRow label="Estimated daily usage" value={formatConsumption(submission.estimated_daily_usage_kL)} />
+                </dl>
+              </article>
+            ))
+          ) : (
+            <p className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-500">
+              No household meter photos have been submitted yet.
+            </p>
+          )}
+        </div>
+      </ResidentSectionCard>
     </section>
+  );
+}
+
+function CompactRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <dt>{label}</dt>
+      <dd className="text-right font-semibold text-slate-900">{value}</dd>
+    </div>
   );
 }
 
