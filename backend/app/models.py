@@ -346,6 +346,41 @@ class MunicipalRecommendationsResponse(BaseModel):
     recommendations: list[RecommendationItem]
 
 
+class DemoScenarioStep(BaseModel):
+    step_number: int
+    title: str
+    description: str
+    module: Literal["overview", "water", "recommendations", "waste", "electricity", "impact"]
+    primary_url: str
+    secondary_url: str | None
+    talking_points: list[str]
+
+
+class DemoQuickLink(BaseModel):
+    label: str
+    url: str
+
+
+class DemoSummaryMetrics(BaseModel):
+    households_monitored: int
+    water_statements_processed: int
+    meter_submissions: int
+    waste_queries: int
+    electricity_topups: int
+    active_recommendations: int
+
+
+class DemoScenarioResponse(BaseModel):
+    scenario_title: str
+    scenario_subtitle: str
+    community_name: str
+    pilot_area: str
+    demo_household_id: str
+    steps: list[DemoScenarioStep]
+    quick_links: list[DemoQuickLink]
+    summary_metrics: DemoSummaryMetrics
+
+
 class ImpactWaterActivityItem(BaseModel):
     submitted_at: str
     household_id: str

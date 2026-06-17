@@ -17,8 +17,14 @@ export default function Home() {
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
-              href="/municipal/impact"
+              href="/municipal/demo"
               className="rounded-md bg-teal-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-800"
+            >
+              Start Demo Scenario
+            </Link>
+            <Link
+              href="/municipal/impact"
+              className="rounded-md border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
             >
               View Impact Dashboard
             </Link>

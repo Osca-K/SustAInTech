@@ -20,6 +20,8 @@ The electricity API stores resident-entered prepaid electricity top-ups. It reco
 
 The recommendations API generates deterministic cross-module alerts from existing water, electricity, and waste data. Household recommendations are scoped to one household and provide practical resident next steps. Municipal recommendations are aggregate/community-level signals. The API does not call external AI and does not expose internal image paths, image hashes, raw notes, or full token references.
 
+The demo API returns a curated guided scenario using existing operational data. It selects a suitable demo household, returns relative frontend links, and summarizes safe aggregate metrics. It is a presentation/navigation layer only and does not add AI, persist demo records, or alter module logic.
+
 The impact API combines water, waste, and prepaid electricity summary data for municipal/community reporting. It uses existing operational tables only. Water metrics are based on municipal readings and resident meter submissions. Waste metrics are based on household sorting guidance queries; the diversion percentage is awareness potential, not confirmed physical diversion. Electricity metrics are resident-entered top-up awareness signals, not grid optimization. No new AI is added by this endpoint.
 
 ## Setup
@@ -98,6 +100,12 @@ Recommendations:
 ```text
 GET http://127.0.0.1:8000/api/households/{household_id}/recommendations
 GET http://127.0.0.1:8000/api/recommendations/municipal
+```
+
+Demo scenario:
+
+```text
+GET http://127.0.0.1:8000/api/demo/scenario
 ```
 
 Impact summary:

@@ -29,6 +29,7 @@ Current municipal frontend workflows include:
 - household waste-sorting assistant with deterministic guidance, household-private query history, and simple municipal aggregate trends.
 - household prepaid electricity tracking with resident-entered top-ups, household-private notes, last-4 token references only, and aggregate municipal trends.
 - cross-module recommendations that turn existing water, electricity, and waste data into deterministic resident and municipal alerts.
+- demo scenario mode for a guided presentation walkthrough across the existing modules.
 - unified impact dashboard combining water monitoring, waste-sorting awareness, and prepaid electricity activity metrics for municipal/community review.
 
 Insights do not read hidden ground-truth labels and do not confirm leaks. They provide a deterministic baseline for future AI explanation agents.
@@ -44,6 +45,8 @@ Waste sorting starts with a deterministic manual-rule baseline. Residents enter 
 Prepaid electricity tracking starts with resident-entered purchases only. The app stores purchase date, amount, units, optional current balance, supplier, notes, and at most the last 4 characters of a token for household reference. It never stores a full prepaid token. Municipal views use aggregate top-up metrics and do not expose household notes or token references. No external AI is used for electricity tracking.
 
 Recommendations are generated dynamically from existing water, electricity, and waste data. Resident recommendations are scoped to the selected household. Municipal recommendations are aggregate/community-level alerts and opportunities. This is a deterministic baseline rule engine, not a new external AI model.
+
+Demo Scenario Mode is a guided navigation and presentation layer for judges or viewers. It uses existing operational data to select a demo household, summarize key metrics, and link through the water, recommendations, waste, electricity, and impact pages. It does not add AI, store new records, or alter module logic.
 
 The impact dashboard combines municipal water readings, resident meter submissions, waste sorting queries, and prepaid electricity top-ups. Water metrics reflect operational readings and resident submissions. Waste metrics reflect awareness and education activity; the diversion percentage is awareness potential, not confirmed physical waste diverted. Electricity metrics reflect resident-entered top-up awareness, not grid optimization. No new AI was added for this dashboard milestone.
 

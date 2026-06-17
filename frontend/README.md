@@ -134,6 +134,14 @@ http://localhost:3000/municipal/recommendations
 
 Municipal recommendations are grouped by water, electricity, waste, and combined signals. They are generated from existing operational data and do not expose private image paths, image hashes, household notes, or token references.
 
+## Open Demo Scenario
+
+```text
+http://localhost:3000/municipal/demo
+```
+
+Demo Scenario Mode provides a guided presentation path through the existing water, recommendations, waste, prepaid electricity, and impact pages. It uses operational data from the backend to select a demo household and summary metrics. It does not add new AI, store demo records, or change module logic.
+
 ## Open Impact Dashboard
 
 ```text

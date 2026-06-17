@@ -354,6 +354,41 @@ export type MunicipalRecommendationsResponse = {
   recommendations: RecommendationItem[];
 };
 
+export type DemoScenarioStep = {
+  step_number: number;
+  title: string;
+  description: string;
+  module: "overview" | "water" | "recommendations" | "waste" | "electricity" | "impact";
+  primary_url: string;
+  secondary_url: string | null;
+  talking_points: string[];
+};
+
+export type DemoQuickLink = {
+  label: string;
+  url: string;
+};
+
+export type DemoSummaryMetrics = {
+  households_monitored: number;
+  water_statements_processed: number;
+  meter_submissions: number;
+  waste_queries: number;
+  electricity_topups: number;
+  active_recommendations: number;
+};
+
+export type DemoScenarioResponse = {
+  scenario_title: string;
+  scenario_subtitle: string;
+  community_name: string;
+  pilot_area: string;
+  demo_household_id: string;
+  steps: DemoScenarioStep[];
+  quick_links: DemoQuickLink[];
+  summary_metrics: DemoSummaryMetrics;
+};
+
 export type ImpactWaterActivityItem = {
   submitted_at: string;
   household_id: string;
@@ -680,6 +715,10 @@ export function getHouseholdRecommendations(householdId: string) {
 
 export function getMunicipalRecommendations() {
   return apiGet<MunicipalRecommendationsResponse>("/api/recommendations/municipal");
+}
+
+export function getDemoScenario() {
+  return apiGet<DemoScenarioResponse>("/api/demo/scenario");
 }
 
 export function getImpactSummary() {
