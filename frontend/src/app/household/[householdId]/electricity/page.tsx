@@ -620,70 +620,82 @@ function AnomalyCard() {
 }
 
 function MonitoringCard() {
+  const confidence = 97;
+  const statusTitle = "System stable";
+  const statusMessage = "No anomaly detected";
+  const description = "Monitoring your home";
+  const buttonLabel = "Run System Check";
+
   return (
-    <SectionCard className="mt-3 overflow-hidden !rounded-[1.45rem] !p-4 text-left shadow-[0_10px_32px_rgba(15,23,42,0.06)]">
-      <div className="flex items-center justify-between">
-        <h2 className="text-[1rem] font-black leading-none tracking-[-0.05em] text-slate-950">
-          Load Monitoring
+    <section
+      className="mt-5 overflow-hidden rounded-[2rem] border border-white/80 bg-[linear-gradient(145deg,#ffffff,#f7f9ff)] p-5 shadow-[0_18px_45px_rgba(30,64,175,0.10)]"
+      style={{ fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}
+    >
+      <div>
+        <h2 className="text-[1.55rem] font-extrabold leading-tight tracking-[-0.045em] text-[#07184a]">
+          Overload Monitoring
         </h2>
-        <span className="flex h-6 w-6 items-center justify-center rounded-full border border-slate-300 bg-white text-xs font-black text-slate-500 shadow-sm">
-          i
-        </span>
       </div>
 
-      <div className="mt-3 grid grid-cols-[5.8rem_1fr] items-center gap-3">
-        <div className="relative flex h-[5.8rem] w-[5.8rem] items-center justify-center overflow-hidden rounded-[1.35rem] bg-gradient-to-br from-amber-50 via-white to-amber-100/80 shadow-[0_10px_22px_rgba(245,158,11,0.14)]">
-          <div className="absolute left-3 top-3 grid grid-cols-3 gap-1">
-            {Array.from({ length: 9 }).map((_, index) => (
-              <span key={index} className="h-0.5 w-0.5 rounded-full bg-amber-200" />
-            ))}
-          </div>
-          <span className="absolute inset-2 rounded-[1rem] bg-white/55 blur-sm" />
+      <div className="mt-5 grid grid-cols-[8.3rem_1fr] items-center gap-4">
+        <div className="relative flex h-[8.3rem] w-[8.3rem] items-center justify-center overflow-hidden rounded-[1.65rem] bg-[linear-gradient(145deg,#fffdf9,#f4f7ff)] shadow-[0_16px_32px_rgba(124,145,201,0.12)] ring-1 ring-[#edf0ff]">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_22%,rgba(255,255,255,0.92),transparent_36%),radial-gradient(circle_at_76%_74%,rgba(169,214,226,0.16),transparent_40%),radial-gradient(circle_at_42%_70%,rgba(237,217,181,0.16),transparent_44%)]" />
+          <div className="absolute inset-3 rounded-[1.25rem] bg-white/36 blur-sm" />
           <AssetImage
-            src={`${electricityAssetBase}/electricity-magnifier-check.png`}
+            src={`${electricityAssetBase}/Shield.png`}
             alt=""
-            className="relative h-[6.8rem] w-[6.8rem] object-cover object-center mix-blend-multiply"
+            className="relative h-[7.35rem] w-[7.35rem] object-contain opacity-[0.94] saturate-[0.82]"
           />
-          <span className="pointer-events-none absolute inset-0 rounded-[1.35rem] ring-1 ring-amber-100" />
         </div>
 
         <div className="min-w-0">
-          <p className="inline-flex items-center gap-1.5 text-[0.55rem] font-black uppercase tracking-[0.08em] text-slate-400">
-            <span className="h-2 w-2 rotate-45 rounded-[0.12rem] bg-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.45)]" />
-            AI Confidence
-          </p>
-          <div className="mt-1 flex items-center gap-2">
-            <p className="text-[2.25rem] font-black leading-none tracking-[-0.1em] text-emerald-600">
-              97%
-            </p>
-            <span className="h-7 w-7 rounded-full bg-emerald-50 p-2">
-              <span className="block h-full w-full rounded-full bg-emerald-500" />
-            </span>
+          <div className="relative mx-auto flex h-[9.7rem] w-[9.7rem] shrink-0 items-center justify-center overflow-hidden rounded-full">
+            <AssetImage
+              src={`${electricityAssetBase}/Ring.png`}
+              alt=""
+              className="pointer-events-none absolute inset-0 block h-full w-full scale-[1.06] object-contain object-center opacity-95"
+            />
+            <div className="relative z-[2] flex translate-y-0.5 flex-col items-center justify-center text-center">
+              <p className="text-[2.22rem] font-extrabold leading-none tracking-[-0.055em] text-[#07184a]">
+                {confidence}%
+              </p>
+              <p className="mt-1 text-[0.63rem] font-semibold leading-none tracking-[-0.015em] text-[#8a97b5]">
+                AI Confidence
+              </p>
+            </div>
           </div>
-          <div className="mt-2 h-2 overflow-hidden rounded-full border border-emerald-100 bg-white">
-            <span className="block h-full w-[97%] rounded-full bg-gradient-to-r from-emerald-400 to-emerald-600 shadow-[0_4px_10px_rgba(34,197,94,0.24)]" />
+          <div className="mt-3 h-3 overflow-hidden rounded-full border border-emerald-100 bg-white/80 shadow-[inset_0_1px_3px_rgba(30,64,175,0.08)]">
+            <span
+              className="block h-full rounded-full bg-gradient-to-r from-[#7ce1b0] to-[#63d7aa] shadow-[0_4px_14px_rgba(39,184,111,0.22)]"
+              style={{ width: `${confidence}%` }}
+            />
           </div>
-          <span className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-white px-2.5 py-1 text-[0.55rem] font-semibold text-emerald-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]">
-            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-white">
-              <ElectricIcon name="check" className="h-2.5 w-2.5" />
-            </span>
-            No anomaly detected
-          </span>
         </div>
       </div>
 
-      <div className="mt-3 rounded-[1.15rem] bg-gradient-to-br from-slate-50 to-white px-3 py-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_8px_18px_rgba(15,23,42,0.04)]">
-        <p className="text-center text-[0.65rem] font-semibold leading-4 tracking-[-0.02em] text-slate-700">
-          Monitoring your home <span className="font-black text-amber-500">24/7</span> for overload,
+      <div className="mt-4 flex items-center gap-2.5 rounded-full border border-emerald-100 bg-white/80 px-3 py-2.5 shadow-[0_10px_24px_rgba(39,184,111,0.08)]">
+        <AssetImage src={`${electricityAssetBase}/check.png`} alt="" className="h-8 w-8 shrink-0 object-contain" />
+        <span className="whitespace-nowrap text-[0.78rem] font-extrabold tracking-[-0.02em] text-[#42b883]">
+          {statusTitle}
+        </span>
+        <span className="h-6 w-px shrink-0 bg-emerald-100" />
+        <span className="min-w-0 text-[0.72rem] font-medium tracking-[-0.01em] text-[#8a97b5]">
+          {statusMessage}
+        </span>
+      </div>
+
+      <div className="mt-4 flex items-center gap-3 rounded-[1.35rem] border border-slate-100 bg-white/78 px-4 py-3 shadow-[0_12px_28px_rgba(30,64,175,0.06)]">
+        <AssetImage src={`${electricityAssetBase}/home.png`} alt="" className="h-10 w-10 shrink-0 object-contain" />
+        <p className="text-[0.82rem] font-medium leading-5 tracking-[-0.02em] text-[#7a86a3]">
+          {description} <span className="font-extrabold text-[#7a8df6]">24/7</span> for overload,
           draw, and efficiency drift.
         </p>
       </div>
 
-      <button className="mt-3 flex w-full items-center justify-center gap-2 rounded-[1.15rem] bg-gradient-to-r from-amber-400 via-amber-500 to-orange-400 py-2.5 text-[0.74rem] font-black tracking-[-0.02em] text-white shadow-[0_10px_20px_rgba(245,158,11,0.2)]">
-        <ElectricIcon name="bolt" className="h-4 w-4 fill-white stroke-white" />
-        Run System Check
+      <button className="mt-5 flex h-14 w-full items-center justify-center rounded-[1.25rem] bg-gradient-to-r from-[#7fb0ff] via-[#8d8df7] to-[#b58cf3] text-[1rem] font-extrabold tracking-[-0.02em] text-white shadow-[0_14px_30px_rgba(126,141,246,0.28)]">
+        {buttonLabel}
       </button>
-    </SectionCard>
+    </section>
   );
 }
 
