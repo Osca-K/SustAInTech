@@ -13,11 +13,11 @@ type ElectricityPageProps = {
 const electricityAssetBase = "/assets/resident/electricity";
 
 const devices = [
-  { name: "Smart Meter", room: "Main Line", state: "Active", accent: "blue" },
-  { name: "Air Conditioner", room: "Living Room", state: "Active", accent: "amber" },
-  { name: "Fridge", room: "Kitchen", state: "Active", accent: "amber" },
-  { name: "Washing Machine", room: "Laundry Room", state: "Standby", accent: "amber" },
-  { name: "Water Heater", room: "Bathroom", state: "Scheduled", accent: "amber" },
+  { name: "Smart Meter", room: "Main Line", state: "Active", iconSrc: `${electricityAssetBase}/Smater%20Meter.png`, enabled: true },
+  { name: "Air Conditioner", room: "Living Room", state: "Active", iconSrc: `${electricityAssetBase}/Air%20Conditioner.png`, enabled: true },
+  { name: "Fridge", room: "Kitchen", state: "Active", iconSrc: `${electricityAssetBase}/Fridge.png`, enabled: true },
+  { name: "Washing Machine", room: "Laundry Room", state: "Offline", iconSrc: `${electricityAssetBase}/Washing%20Machine.png`, enabled: false },
+  { name: "Water Heater", room: "Bathroom", state: "Scheduled", iconSrc: `${electricityAssetBase}/Water%20Heater.png`, enabled: true },
 ];
 
 const categories = [
@@ -202,121 +202,271 @@ function ScanMeterCard() {
 
 function RecentTrendCard() {
   return (
-    <SectionCard className="mt-3">
-      <div className="flex items-center justify-between">
-        <h2 className="text-[0.9rem] font-black tracking-[-0.05em]">Recent Trend</h2>
-        <div className="grid grid-cols-3 rounded-xl bg-slate-50 p-1 text-[0.56rem] font-bold text-slate-500">
-          <span className="rounded-lg bg-white px-2.5 py-1 text-amber-600 shadow-sm">Daily</span>
-          <span className="px-2.5 py-1">Weekly</span>
-          <span className="px-2.5 py-1">Monthly</span>
+    <section
+      className="relative mt-5 overflow-hidden rounded-[2rem] border border-white/80 bg-gradient-to-br from-white to-[#f4f8ff] p-[1.375rem] shadow-[0_18px_45px_rgba(30,64,175,0.10)]"
+      style={{ fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}
+    >
+      <div className="pointer-events-none absolute inset-x-0 -top-4 z-0 h-[12.6rem] opacity-[0.72]">
+        <AssetImage
+          src={`${electricityAssetBase}/House%20to%20use%20for%20the%20Graph%20card.png`}
+          alt=""
+          className="h-full w-full object-cover object-[center_top]"
+        />
+      </div>
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[13rem] bg-[linear-gradient(90deg,rgba(255,255,255,0.96)_0%,rgba(255,255,255,0.84)_34%,rgba(255,255,255,0.2)_68%,rgba(255,255,255,0.36)_100%)]" />
+      <div className="pointer-events-none absolute inset-x-0 top-[7.8rem] z-0 h-[6rem] bg-gradient-to-b from-transparent via-[#f7faff]/58 to-[#f7faff]" />
+      <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(circle_at_84%_16%,rgba(255,255,255,0.28),transparent_34%)]" />
+
+      <div className="relative z-10">
+        <h2 className="max-w-[13.5rem] text-[1.55rem] font-extrabold leading-[1.16] tracking-[-0.035em] text-[#0b1744]">
+          Energy Usage
+        </h2>
+        <p className="mt-1.5 max-w-[14rem] text-[0.82rem] font-medium tracking-[-0.01em] text-[#8a97b5]">
+          Your electricity usage overview
+        </p>
+
+        <div className="mt-3.5 flex items-center gap-5 text-[0.7rem] font-semibold text-[#7a86a3]">
+          <span className="inline-flex items-center gap-2">
+            <span className="h-1.5 w-7 rounded-full bg-[#f6ae13]" />
+            This Week
+          </span>
+          <span className="inline-flex items-center gap-2">
+            <span className="h-1.5 w-7 rounded-full border-t-2 border-dashed border-[#a9c5ff]" />
+            Last Week
+          </span>
+        </div>
+
+        <div className="relative mt-[1.125rem] h-[18.8rem] overflow-hidden rounded-[1.75rem] bg-white/90 p-[1.125rem] shadow-[0_12px_28px_rgba(30,64,175,0.08)]">
+          <svg className="h-full w-full" viewBox="0 0 360 280" role="img" aria-label="Electricity usage trend chart">
+            <defs>
+              <linearGradient id="electricityTrendArea" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stopColor="#f6ae13" stopOpacity="0.28" />
+                <stop offset="55%" stopColor="#f6ae13" stopOpacity="0.10" />
+                <stop offset="100%" stopColor="#f6ae13" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            {[36, 74, 112, 150, 188, 226].map((y) => (
+              <line key={y} x1="34" x2="348" y1={y} y2={y} stroke="#edf2fb" strokeWidth="1" />
+            ))}
+            <text x="4" y="18" fill="#7a86a3" fontSize="10" fontWeight="600">kWh</text>
+            {[20, 16, 12, 8, 4, 0].map((tick, index) => (
+              <text key={tick} x="6" y={40 + index * 38} fill="#9aa6bf" fontSize="10" textAnchor="start">
+                {tick}
+              </text>
+            ))}
+            <path
+              d="M42 186 C66 170 78 156 96 142 C124 120 137 76 150 74 C176 70 179 44 202 36 C228 28 233 154 255 170 C278 190 294 116 312 106 C328 96 338 86 348 74 L348 236 L42 236 Z"
+              fill="url(#electricityTrendArea)"
+            />
+            <path
+              d="M42 214 C70 224 82 202 96 194 C120 178 135 156 150 150 C172 140 184 112 202 108 C224 104 240 186 255 198 C282 218 292 164 312 154 C330 144 340 138 348 132"
+              fill="none"
+              stroke="#a9c5ff"
+              strokeDasharray="6 7"
+              strokeLinecap="round"
+              strokeWidth="3"
+            />
+            <path
+              d="M42 186 C66 170 78 156 96 142 C124 120 137 76 150 74 C176 70 179 44 202 36 C228 28 233 154 255 170 C278 190 294 116 312 106 C328 96 338 86 348 74"
+              fill="none"
+              stroke="#f6ae13"
+              strokeLinecap="round"
+              strokeWidth="4"
+            />
+            {[
+              [42, 186],
+              [96, 142],
+              [150, 74],
+              [202, 36],
+              [255, 170],
+              [312, 106],
+              [348, 74],
+            ].map(([x, y]) => (
+              <circle key={`${x}-${y}`} cx={x} cy={y} r="5.5" fill="#fff" stroke="#f6ae13" strokeWidth="3" />
+            ))}
+            {["00:00", "04:00", "08:00", "12:00", "16:00", "20:00", "24:00"].map((label, index) => (
+              <text key={label} x={42 + index * 51} y="268" fill="#7a86a3" fontSize="10" textAnchor="middle">
+                {label}
+              </text>
+            ))}
+          </svg>
+        </div>
+
+        <div className="mx-auto mt-3.5 grid h-11 w-full grid-cols-4 rounded-full bg-[#eef3ff] p-1 text-center text-[0.72rem] font-semibold text-[#46526f] shadow-[inset_0_1px_0_rgba(255,255,255,0.95)]">
+          <span className="flex items-center justify-center rounded-full">Hourly</span>
+          <span className="flex items-center justify-center rounded-full bg-white text-[#f2a100] shadow-[0_6px_16px_rgba(40,70,150,0.12)]">Daily</span>
+          <span className="flex items-center justify-center rounded-full">Weekly</span>
+          <span className="flex items-center justify-center rounded-full">Monthly</span>
+        </div>
+
+        <div className="mt-4 grid min-h-[7.8rem] grid-cols-3 rounded-[1.6rem] bg-white/92 px-2 py-4 shadow-[0_12px_28px_rgba(30,64,175,0.08)]">
+          <TrendStat
+            iconSrc={`${electricityAssetBase}/3%20bar%20graph%20icon.png`}
+            label="Average This Week"
+            value="9.6"
+            unit="kWh"
+            subtext="↑ 12.4% vs last week"
+            subtextClassName="text-[#27b86f]"
+          />
+          <TrendStat
+            iconSrc={`${electricityAssetBase}/Ligthingning-icon.png`}
+            label="Total This Week"
+            value="67.2"
+            unit="kWh"
+            subtext="↑ 8.7% vs last week"
+            subtextClassName="text-[#27b86f]"
+            withDivider
+          />
+          <TrendStat
+            iconSrc={`${electricityAssetBase}/Calender%20Icon.png`}
+            label="Highest Day"
+            value="18.3"
+            unit="kWh"
+            subtext="Friday"
+            subtextClassName="text-[#7a5cff]"
+            withDivider
+          />
         </div>
       </div>
-      <div className="mt-3 flex items-center gap-4 text-[0.58rem] font-semibold text-slate-500">
-        <span className="inline-flex items-center gap-1.5">
-          <span className="h-1.5 w-4 rounded-full bg-amber-400" />
-          This Week
-        </span>
-        <span className="inline-flex items-center gap-1.5">
-          <span className="h-1.5 w-4 rounded-full bg-amber-200" />
-          Last Week
-        </span>
-      </div>
-      <div className="mt-2 h-36">
-        <svg className="h-full w-full" viewBox="0 0 360 150" role="img" aria-label="Electricity usage recent trend">
-          <defs>
-            <linearGradient id="thisWeekArea" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="#f5ad16" stopOpacity="0.26" />
-              <stop offset="100%" stopColor="#f5ad16" stopOpacity="0.03" />
-            </linearGradient>
-            <linearGradient id="lastWeekArea" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="#f5c862" stopOpacity="0.22" />
-              <stop offset="100%" stopColor="#f5c862" stopOpacity="0.02" />
-            </linearGradient>
-          </defs>
-          {[20, 50, 80, 110].map((y) => (
-            <line key={y} x1="24" x2="354" y1={y} y2={y} stroke="#eef2f7" strokeWidth="1" />
-          ))}
-          <path
-            d="M28 92 C58 106 72 98 94 86 C122 68 141 72 164 70 C190 68 202 30 226 36 C252 43 252 92 284 82 C312 72 320 58 350 70 L350 124 L28 124 Z"
-            fill="url(#thisWeekArea)"
-          />
-          <path
-            d="M28 118 C58 128 76 120 94 110 C122 92 142 102 164 96 C190 90 206 58 226 70 C252 82 254 120 284 106 C312 92 322 90 350 98 L350 124 L28 124 Z"
-            fill="url(#lastWeekArea)"
-          />
-          <path
-            d="M28 92 C58 106 72 98 94 86 C122 68 141 72 164 70 C190 68 202 30 226 36 C252 43 252 92 284 82 C312 72 320 58 350 70"
-            fill="none"
-            stroke="#f5ad16"
-            strokeLinecap="round"
-            strokeWidth="3"
-          />
-          <path
-            d="M28 118 C58 128 76 120 94 110 C122 92 142 102 164 96 C190 90 206 58 226 70 C252 82 254 120 284 106 C312 92 322 90 350 98"
-            fill="none"
-            stroke="#f5c862"
-            strokeDasharray="5 5"
-            strokeLinecap="round"
-            strokeWidth="2"
-          />
-          {[28, 94, 164, 226, 284, 350].map((x, index) => (
-            <circle key={x} cx={x} cy={[92, 86, 70, 36, 82, 70][index]} r="4" fill="#fff" stroke="#f5ad16" strokeWidth="2" />
-          ))}
-          {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day, index) => (
-            <text key={day} x={28 + index * 53} y="144" fill="#475569" fontSize="9" textAnchor="middle">
-              {day}
-            </text>
-          ))}
-          {[0, 4, 8, 12, 16].map((tick, index) => (
-            <text key={tick} x="0" y={116 - index * 28} fill="#64748b" fontSize="8">
-              {tick} kWh
-            </text>
-          ))}
-        </svg>
-      </div>
-      <div className="mt-2 grid grid-cols-2 rounded-2xl bg-slate-50 p-3 text-center">
-        <div className="border-r border-slate-200">
-          <p className="text-[0.55rem] font-semibold text-slate-500">Avg. This Week</p>
-          <p className="text-lg font-black tracking-[-0.06em]">8.7 <span className="text-[0.6rem]">kWh</span></p>
-        </div>
-        <div>
-          <p className="text-[0.55rem] font-semibold text-slate-500">vs Last Week</p>
-          <p className="text-lg font-black tracking-[-0.06em] text-emerald-600">6%</p>
-        </div>
-      </div>
-    </SectionCard>
+    </section>
+  );
+}
+
+function TrendStat({
+  iconSrc,
+  label,
+  value,
+  unit,
+  subtext,
+  subtextClassName,
+  withDivider = false,
+}: {
+  iconSrc: string;
+  label: string;
+  value: string;
+  unit: string;
+  subtext: string;
+  subtextClassName: string;
+  withDivider?: boolean;
+}) {
+  return (
+    <div className={`min-w-0 px-2.5 text-left ${withDivider ? "border-l border-slate-200/80" : ""}`}>
+      <AssetImage src={iconSrc} alt="" className="mb-2 h-10 w-10 object-contain" />
+      <p className="min-h-[2rem] text-[0.6rem] font-semibold leading-[1rem] tracking-[-0.015em] text-[#7a86a3]">{label}</p>
+      <p className="mt-1.5 flex items-baseline gap-1 whitespace-nowrap text-[1.22rem] font-extrabold leading-none tracking-[-0.04em] text-[#07184a]">
+        <span>{value}</span>
+        <span className="text-[0.56rem] font-bold tracking-normal">{unit}</span>
+      </p>
+      <p className={`mt-1.5 text-[0.52rem] font-bold leading-3 tracking-[-0.01em] ${subtextClassName}`}>{subtext}</p>
+    </div>
   );
 }
 
 function DevicesCard() {
   return (
-    <SectionCard className="mt-4">
-      <SectionTitle icon="devices">Your Devices</SectionTitle>
-      <div className="mt-3 divide-y divide-slate-100">
+    <section
+      className="mt-5 rounded-[2rem] border border-[rgba(220,230,255,0.7)] bg-[linear-gradient(145deg,#ffffff,#f6f9ff)] p-5 shadow-[0_18px_45px_rgba(30,64,175,0.10)]"
+      style={{ fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}
+    >
+      <div className="flex flex-col items-center text-center">
+        <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 shadow-[0_14px_30px_rgba(60,120,255,0.16)] ring-1 ring-blue-100/70 backdrop-blur">
+          <AssetImage
+            src={`${electricityAssetBase}/Device.png`}
+            alt=""
+            className="h-10 w-10 object-contain"
+          />
+        </span>
+        <h2 className="mt-4 text-[1.65rem] font-extrabold leading-none tracking-[-0.045em] text-[#07184a]">
+          Your Devices
+        </h2>
+      </div>
+
+      <div className="mt-6 grid grid-cols-4 gap-2 rounded-[1.45rem] bg-white/78 p-2 shadow-[0_12px_30px_rgba(30,64,175,0.08)] ring-1 ring-slate-100/80">
+        <DeviceSummaryCard iconSrc={`${electricityAssetBase}/Total%20Devices.png`} label="Devices" value="5" />
+        <DeviceSummaryCard iconSrc={`${electricityAssetBase}/Active.png`} label="Active" value="3" />
+        <DeviceSummaryCard iconSrc={`${electricityAssetBase}/Schedule.png`} label="Schedule" value="1" />
+        <DeviceSummaryCard iconSrc={`${electricityAssetBase}/Ofline.png`} label="Offline" value="1" />
+      </div>
+
+      <div className="mt-5 space-y-3">
         {devices.map((device) => (
-          <div key={device.name} className="flex items-center gap-3 py-2.5">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-500">
-              <ElectricIcon name="device" className="h-4 w-4" />
+          <article
+            key={device.name}
+            className="flex min-h-[5.2rem] items-center gap-2.5 rounded-[1.45rem] bg-white px-3 py-3 shadow-[0_12px_28px_rgba(30,64,175,0.07)] ring-1 ring-slate-100/80"
+          >
+            <span className="flex h-[4.5rem] w-[4.5rem] shrink-0 items-center justify-center overflow-hidden rounded-[1.375rem] bg-[linear-gradient(145deg,#f7faff,#eef4ff)] shadow-[0_8px_18px_rgba(124,145,201,0.12)] ring-1 ring-blue-50/80">
+              <span className="flex h-[3.625rem] w-[3.625rem] items-center justify-center overflow-hidden rounded-[1.125rem]">
+                <AssetImage
+                  src={device.iconSrc}
+                  alt=""
+                  className="block h-14 w-14 scale-110 object-contain object-center"
+                />
+              </span>
             </span>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-[0.78rem] font-black tracking-[-0.04em]">{device.name}</p>
-              <p className="text-[0.62rem] font-semibold text-slate-500">{device.room}</p>
+              <p className="whitespace-normal text-[0.88rem] font-bold leading-[1.08rem] tracking-[-0.025em] text-[#07184a]">{device.name}</p>
+              <p className="mt-1 whitespace-nowrap text-[0.72rem] font-medium text-[#7a86a3]">{device.room}</p>
             </div>
-            <span className={`text-[0.62rem] font-bold ${device.state === "Standby" ? "text-amber-500" : "text-emerald-500"}`}>
-              {device.state}
-              <span className="ml-1 inline-block h-1.5 w-1.5 rounded-full bg-current align-middle" />
+            <DeviceStatusDot state={device.state} />
+            <button
+              aria-label={`Edit ${device.name}`}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-[#3c78ff] shadow-[0_8px_18px_rgba(30,64,175,0.10)] ring-1 ring-slate-100"
+            >
+              <ElectricIcon name="edit" className="h-4 w-4" />
+            </button>
+            <span className={`relative h-7 w-12 shrink-0 rounded-full p-0.5 transition-colors ${device.enabled ? "bg-gradient-to-r from-[#557dff] to-[#3362f5]" : "bg-[#dce3f2]"}`}>
+              <span className={`block h-6 w-6 rounded-full bg-white shadow-[0_4px_10px_rgba(15,23,42,0.16)] transition-transform ${device.enabled ? "translate-x-5" : ""}`} />
             </span>
-            <span className={`h-6 w-10 rounded-full p-0.5 ${device.state === "Standby" ? "bg-slate-200" : "bg-blue-500"}`}>
-              <span className={`block h-5 w-5 rounded-full bg-white shadow-sm ${device.state === "Standby" ? "" : "translate-x-4"}`} />
-            </span>
-          </div>
+          </article>
         ))}
       </div>
-      <div className="mt-2 flex items-center justify-between text-[0.7rem] font-black text-blue-600">
-        <span>+ Add New Device</span>
-        <span>View All Devices &gt;</span>
+
+      <div className="mt-5 grid grid-cols-[1fr_1fr] gap-3">
+        <button className="flex h-12 items-center justify-center gap-2 whitespace-nowrap rounded-[1.05rem] bg-gradient-to-br from-[#6b8cff] to-[#3d63f3] px-2 text-[0.78rem] font-bold text-white shadow-[0_12px_24px_rgba(61,99,243,0.22)]">
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20">
+            <ElectricIcon name="plus" className="h-4 w-4" />
+          </span>
+          Add New Device
+        </button>
+        <button className="flex h-12 items-center justify-center gap-1.5 whitespace-nowrap rounded-[1.05rem] bg-white px-2 text-[0.76rem] font-bold text-[#316bff] shadow-[0_10px_24px_rgba(30,64,175,0.06)] ring-1 ring-slate-100">
+          <ElectricIcon name="grid" className="h-4 w-4" />
+          View All Devices
+          <ElectricIcon name="chevronRight" className="h-4 w-4" />
+        </button>
       </div>
-    </SectionCard>
+    </section>
+  );
+}
+
+function DeviceSummaryCard({
+  iconSrc,
+  label,
+  value,
+}: {
+  iconSrc: string;
+  label: string;
+  value: string;
+}) {
+  return (
+    <article className="flex min-h-[5.6rem] flex-col items-center justify-between rounded-[1rem] bg-white px-1.5 py-2.5 text-center shadow-[0_8px_18px_rgba(30,64,175,0.06)] ring-1 ring-slate-100/90">
+      <p className="text-[0.7rem] font-semibold leading-none text-[#415071]">{label}</p>
+      <AssetImage src={iconSrc} alt="" className="h-7 w-7 object-contain" />
+      <p className="text-[1.55rem] font-extrabold leading-none tracking-[-0.05em] text-[#07184a]">{value}</p>
+    </article>
+  );
+}
+
+function DeviceStatusDot({ state }: { state: string }) {
+  const statusAssets: Record<string, string> = {
+    Active: `${electricityAssetBase}/Active.png`,
+    Scheduled: `${electricityAssetBase}/Schedule.png`,
+    Offline: `${electricityAssetBase}/Ofline.png`,
+  };
+
+  return (
+    <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+      <AssetImage src={statusAssets[state]} alt="" className="h-3.5 w-3.5 object-contain" />
+    </span>
   );
 }
 
@@ -516,17 +666,6 @@ function SectionCard({ children, className = "" }: { children: ReactNode; classN
   );
 }
 
-function SectionTitle({ children, icon }: { children: ReactNode; icon: "devices" }) {
-  return (
-    <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
-      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
-        <ElectricIcon name={icon} className="h-4 w-4" />
-      </span>
-      <h2 className="text-[0.9rem] font-black tracking-[-0.05em]">{children}</h2>
-    </div>
-  );
-}
-
 function ElectricIcon({ name, className }: { name: string; className: string }) {
   const paths: Record<string, string> = {
     bolt: "M13 2 4 14h7l-1 8 10-13h-7l1-7Z",
@@ -545,6 +684,15 @@ function ElectricIcon({ name, className }: { name: string; className: string }) 
     check: "m5 12 4 4L19 6",
     homeBolt: "M3 11 12 4l9 7v9h-6v-5H9v5H3v-9Zm10-1-3 5h3l-1 4 4-6h-3l1-3Z",
     scan: "M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3m13 5h3a2 2 0 0 0 2-2v-3M7 12h10",
+    meter: "M8 3h8a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm2 4h4m-4 10h4",
+    ac: "M5 6h14v7H5V6Zm3 10v2m4-2v2m4-2v2M8 10h8",
+    fridge: "M8 3h8a2 2 0 0 1 2 2v16H6V5a2 2 0 0 1 2-2Zm-2 9h12m-3-5v2m0 6v2",
+    washer: "M7 3h10a2 2 0 0 1 2 2v16H5V5a2 2 0 0 1 2-2Zm3 4h4m-2 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z",
+    heater: "M9 3h6a2 2 0 0 1 2 2v12a5 5 0 0 1-10 0V5a2 2 0 0 1 2-2Zm3 4v7m-2 5h4",
+    grid: "M4 4h6v6H4V4Zm10 0h6v6h-6V4ZM4 14h6v6H4v-6Zm10 0h6v6h-6v-6Z",
+    edit: "M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4Zm11-13 2 2",
+    plus: "M12 5v14M5 12h14",
+    chevronRight: "m9 18 6-6-6-6",
   };
 
   return (
