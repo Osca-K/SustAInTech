@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { ReactNode, use } from "react";
+import { use } from "react";
 
 import { ResidentMobileShell } from "@/components/resident/ResidentMobileShell";
 
@@ -28,9 +28,6 @@ const categories = [
   { label: "Other", value: 13, color: "#aaa0f2" },
 ];
 
-const anomalyBars = [12, 14, 18, 16, 20, 22, 25, 32, 72, 78, 66, 28, 16, 12];
-const anomalyLabels = ["12 AM", "2 AM", "4 AM", "6 AM", "8 AM", "10 AM", "12 PM", "2 PM", "4 PM", "6 PM", "8 PM", "10 PM", "12 AM"];
-
 export default function HouseholdElectricityPage({ params }: ElectricityPageProps) {
   const { householdId } = use(params);
 
@@ -44,9 +41,7 @@ export default function HouseholdElectricityPage({ params }: ElectricityPageProp
         <RecentTrendCard />
         <DevicesCard />
         <CategoryCard />
-        <AnomalyCard />
         <MonitoringCard />
-        <QuickActions />
       </div>
     </ResidentMobileShell>
   );
@@ -184,9 +179,6 @@ function ScanMeterCard() {
           <h2 className="text-[1.2rem] font-extrabold tracking-[-0.04em] text-[#0b1744]">
             Scan Your Meter
           </h2>
-          <span className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-300/70 bg-white/85 text-sm font-bold text-[#66708a] shadow-[0_5px_14px_rgba(30,64,175,0.12)]">
-            i
-          </span>
         </div>
 
         <div className="flex-1" />
@@ -577,48 +569,6 @@ function SegmentedUsageDonut() {
   );
 }
 
-function AnomalyCard() {
-  return (
-    <SectionCard className="mt-3">
-      <div className="flex items-start justify-between">
-        <div className="flex gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-red-50 text-red-500">
-            <ElectricIcon name="alert" className="h-4 w-4" />
-          </span>
-          <div>
-            <h2 className="text-[0.86rem] font-black tracking-[-0.04em]">Anomaly Detection</h2>
-            <p className="text-[0.72rem] font-black text-red-500">High usage detected</p>
-            <p className="max-w-[13rem] text-[0.62rem] leading-4 text-[#17224e]">
-              Usage between 5-8 PM is higher than your usual average.
-            </p>
-          </div>
-        </div>
-        <span className="inline-flex items-center gap-1 text-[0.6rem] font-semibold text-red-500">
-          <span className="h-2 w-2 bg-red-500" />
-          Anomaly %
-        </span>
-      </div>
-      <div className="mt-3 flex h-28 items-end gap-1.5 border-l border-b border-slate-200 pl-2">
-        {anomalyBars.map((value, index) => (
-          <div key={value + index} className="flex flex-1 flex-col items-center gap-1">
-            <span className="text-[0.45rem] font-bold text-[#17224e]">{value}%</span>
-            <span
-              className={`w-full rounded-t-md ${value >= 60 ? "bg-red-500" : "bg-amber-400"}`}
-              style={{ height: `${Math.max(value * 0.72, 8)}px` }}
-            />
-            {index % 2 === 0 ? (
-              <span className="text-[0.43rem] font-bold text-[#17224e]">{anomalyLabels[index]}</span>
-            ) : null}
-          </div>
-        ))}
-      </div>
-      <button className="mt-3 w-full rounded-2xl bg-red-50 py-2 text-[0.8rem] font-black text-red-500">
-        View details
-      </button>
-    </SectionCard>
-  );
-}
-
 function MonitoringCard() {
   const confidence = 97;
   const statusTitle = "System stable";
@@ -699,58 +649,6 @@ function MonitoringCard() {
   );
 }
 
-function QuickActions() {
-  return (
-    <section className="mt-3">
-      <h2 className="flex items-center gap-1 px-1 text-[0.86rem] font-black tracking-[-0.04em]">
-        <ElectricIcon name="bolt" className="h-4 w-4 fill-amber-400 stroke-amber-400 text-amber-400" />
-        Quick Actions
-      </h2>
-      <div className="mt-2 grid grid-cols-3 gap-2">
-        <QuickAction icon="leaf" title="Power Saver" subtitle="Reduce usage" color="blue" />
-        <QuickAction icon="power" title="Device Control" subtitle="Manage devices" color="green" />
-        <QuickAction icon="chart" title="Usage History" subtitle="View trends" color="purple" />
-      </div>
-    </section>
-  );
-}
-
-function QuickAction({
-  icon,
-  title,
-  subtitle,
-  color,
-}: {
-  icon: "leaf" | "power" | "chart";
-  title: string;
-  subtitle: string;
-  color: "blue" | "green" | "purple";
-}) {
-  const styles = {
-    blue: "bg-blue-500",
-    green: "bg-emerald-500",
-    purple: "bg-violet-500",
-  };
-
-  return (
-    <article className="rounded-2xl bg-white p-2.5 shadow-[0_8px_26px_rgba(15,23,42,0.06)]">
-      <span className={`flex h-9 w-9 items-center justify-center rounded-full text-white ${styles[color]}`}>
-        <ElectricIcon name={icon} className="h-4 w-4" />
-      </span>
-      <p className="mt-2 text-[0.62rem] font-black tracking-[-0.04em]">{title}</p>
-      <p className="text-[0.52rem] font-semibold text-slate-500">{subtitle}</p>
-    </article>
-  );
-}
-
-function SectionCard({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return (
-    <section className={`rounded-[1.45rem] bg-white p-4 shadow-[0_10px_32px_rgba(15,23,42,0.07)] ${className}`}>
-      {children}
-    </section>
-  );
-}
-
 function ElectricIcon({ name, className }: { name: string; className: string }) {
   const paths: Record<string, string> = {
     bolt: "M13 2 4 14h7l-1 8 10-13h-7l1-7Z",
@@ -759,15 +657,9 @@ function ElectricIcon({ name, className }: { name: string; className: string }) 
     calendar: "M5 4h14v16H5V4Zm0 5h14M8 2v4m8-4v4",
     devices: "M6 4h12v16H6V4Zm3 3h6M9 17h6",
     device: "M8 4h8v16H8V4Zm3 3h2m-2 10h2",
-    alert: "M12 4 3 20h18L12 4Zm0 5v5m0 3h.01",
-    shield: "M12 3 5 6v5c0 4.6 2.9 8.7 7 10 4.1-1.3 7-5.4 7-10V6l-7-3Zm1 4-4 6h4l-2 4 5-7h-4l1-3Z",
-    leaf: "M20 4C10 4 5 9 5 19c7 0 12-5 15-15ZM5 19c3-5 7-8 12-10",
-    power: "M12 2v10m5.7-5.7a8 8 0 1 1-11.4 0",
-    chart: "M5 19V9m7 10V5m7 14v-7",
     bell: "M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Zm-4 11a2 2 0 0 1-4 0",
     settings: "M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm0-6v3m0 14v3M4.9 4.9 7 7m10 10 2.1 2.1M2 12h3m14 0h3M4.9 19.1 7 17m10-10 2.1-2.1",
     check: "m5 12 4 4L19 6",
-    homeBolt: "M3 11 12 4l9 7v9h-6v-5H9v5H3v-9Zm10-1-3 5h3l-1 4 4-6h-3l1-3Z",
     scan: "M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3m13 5h3a2 2 0 0 0 2-2v-3M7 12h10",
     meter: "M8 3h8a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm2 4h4m-4 10h4",
     ac: "M5 6h14v7H5V6Zm3 10v2m4-2v2m4-2v2M8 10h8",
