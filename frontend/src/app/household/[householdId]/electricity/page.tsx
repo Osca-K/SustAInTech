@@ -102,34 +102,34 @@ function UsageHero() {
 }
 function ElectricitySummaryCards() {
   return (
-    <section className="mt-5 grid grid-cols-2 gap-4">
+    <section className="mt-5 grid w-full grid-cols-2 gap-4">
       <ElectricitySummaryCard
-        backgroundSrc={`${electricityAssetBase}/electricity-total_device_icon.png`}
+        backgroundSrc={`${electricityAssetBase}/Total%20Devices%20icon%20%2B%20Background.png`}
         label="Total Devices"
         value="18"
         subtext="devices"
-        accent="text-indigo-500"
+        variant="total"
       />
       <ElectricitySummaryCard
-        backgroundSrc={`${electricityAssetBase}/electricity-active_device.png`}
+        backgroundSrc={`${electricityAssetBase}/Active%20Icon%20%2B%20Background.png`}
         label="Active Devices"
         value="7"
         subtext="in use now"
-        accent="text-emerald-600"
+        variant="active"
       />
       <ElectricitySummaryCard
-        backgroundSrc={`${electricityAssetBase}/electricity-overload-status.png`}
+        backgroundSrc={`${electricityAssetBase}/Status%2BBackground.png`}
         label="Overload Status"
         value="Normal"
         subtext="All systems safe"
-        accent="text-emerald-600"
+        variant="status"
       />
       <ElectricitySummaryCard
-        backgroundSrc={`${electricityAssetBase}/electricity-total-usage-cost.png`}
+        backgroundSrc={`${electricityAssetBase}/Cost%20icon%20%2Bbackground.png`}
         label="Today's Cost"
         value="$2.64"
         subtext="estimated"
-        accent="text-violet-500"
+        variant="cost"
       />
     </section>
   );
@@ -140,26 +140,43 @@ function ElectricitySummaryCard({
   label,
   value,
   subtext,
-  accent,
+  variant,
 }: {
   backgroundSrc: string;
   label: string;
   value: string;
   subtext: string;
-  accent: string;
+  variant: "total" | "active" | "status" | "cost";
 }) {
+  const copyTop = "top-[41%]";
+  const subtitleTop = "top-[53%]";
+  const valueStyles = {
+    total: "right-7 bottom-[1.875rem] text-[1.8125rem] text-[#5b5ef7]",
+    active: "right-[1.875rem] bottom-[1.875rem] text-[1.8125rem] text-[#39a86b]",
+    status: "right-6 bottom-[1.875rem] text-lg text-[#42b487]",
+    cost: "right-6 bottom-[1.875rem] text-[1.1875rem] text-[#7657f6]",
+  };
+
   return (
-    <article className="relative h-[9.65rem] overflow-hidden rounded-[1.5rem] bg-white p-4 shadow-[0_12px_30px_rgba(30,64,175,0.08)]">
+    <article
+      className="relative h-[9.7rem] overflow-hidden rounded-[1.75rem]"
+      style={{ fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}
+    >
       <AssetImage
         src={backgroundSrc}
         alt=""
-        className="absolute inset-0 h-full w-full object-cover object-center"
+        className="pointer-events-none absolute inset-0 z-0 h-full w-full rounded-[inherit] object-fill object-center select-none"
       />
-      <div className="absolute inset-0 bg-gradient-to-br from-white/8 via-white/0 to-white/8" />
-      <div className="relative flex h-full flex-col justify-end pb-0.5">
-        <p className="text-[0.74rem] font-semibold tracking-[-0.03em] text-[#0b1744]">{label}</p>
-        <p className={`mt-1 text-[2rem] font-extrabold leading-none tracking-[-0.06em] ${accent}`}>{value}</p>
-        <p className="mt-1 text-[0.72rem] font-medium text-[#5d6885]">{subtext}</p>
+      <div className="absolute inset-0 z-10">
+        <p className={`absolute left-[1.875rem] ${copyTop} max-w-[5.8rem] whitespace-nowrap text-[0.8125rem] font-extrabold leading-[1.05] tracking-[-0.035em] text-[#07184a]`}>
+          {label}
+        </p>
+        <p className={`absolute left-[1.875rem] ${subtitleTop} max-w-[5.6rem] whitespace-nowrap text-[0.6875rem] font-medium leading-[1.05] tracking-[-0.015em] text-[#6f7c99]`}>
+          {subtext}
+        </p>
+        <p className={`absolute whitespace-nowrap font-extrabold leading-none tracking-[-0.065em] ${valueStyles[variant]}`}>
+          {value}
+        </p>
       </div>
     </article>
   );
@@ -654,7 +671,11 @@ function ElectricIcon({ name, className }: { name: string; className: string }) 
     bolt: "M13 2 4 14h7l-1 8 10-13h-7l1-7Z",
     target: "M12 21a9 9 0 1 0-9-9 9 9 0 0 0 9 9Zm0-4a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0-8v3l2-2",
     coin: "M12 3a9 9 0 1 0 9 9 9 9 0 0 0-9-9Zm0 4v10m3-7c0-1.2-1.1-2-3-2s-3 .8-3 2 1.1 2 3 2 3 .8 3 2-1.1 2-3 2-3-.8-3-2",
+    dollar: "M12 3v18m4-13c0-1.7-1.7-3-4-3s-4 1.3-4 3 1.7 3 4 3 4 1.3 4 3-1.7 3-4 3-4-1.3-4-3",
     calendar: "M5 4h14v16H5V4Zm0 5h14M8 2v4m8-4v4",
+    plug: "M9 2v6m6-6v6M7 8h10v4a5 5 0 0 1-10 0V8Zm5 9v5",
+    activeDot: "M12 12m-5 0a5 5 0 1 0 10 0a5 5 0 1 0-10 0",
+    shieldCheck: "M12 3 5 6v5c0 4.6 2.9 8.7 7 10 4.1-1.3 7-5.4 7-10V6l-7-3Zm-3 9 2 2 4-5",
     devices: "M6 4h12v16H6V4Zm3 3h6M9 17h6",
     device: "M8 4h8v16H8V4Zm3 3h2m-2 10h2",
     bell: "M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Zm-4 11a2 2 0 0 1-4 0",
