@@ -212,22 +212,21 @@ function ScanMeterCard() {
 function RecentTrendCard() {
   return (
     <section
-      className="relative mt-5 overflow-hidden rounded-[2rem] border border-white/80 bg-gradient-to-br from-white to-[#f4f8ff] p-[1.375rem] shadow-[0_18px_45px_rgba(30,64,175,0.10)]"
+      className="relative mt-5 overflow-hidden rounded-[2rem] border border-white/90 bg-[linear-gradient(145deg,#ffffff,#f4f5ff_58%,#f1f9ff)] p-[1.375rem] shadow-[0_18px_45px_rgba(79,70,190,0.11)]"
       style={{ fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}
     >
-      <div className="pointer-events-none absolute inset-x-0 -top-4 z-0 h-[12.6rem] opacity-[0.72]">
+      <div className="pointer-events-none absolute right-0 top-0 z-0 h-[12.5rem] w-[74%] overflow-hidden opacity-95">
         <AssetImage
-          src={`${electricityAssetBase}/House%20to%20use%20for%20the%20Graph%20card.png`}
+          src={`${electricityAssetBase}/Energy-Usage-Background%20on%20top.png`}
           alt=""
-          className="h-full w-full object-cover object-[center_top]"
+          className="h-full w-full object-cover object-top"
         />
       </div>
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[13rem] bg-[linear-gradient(90deg,rgba(255,255,255,0.96)_0%,rgba(255,255,255,0.84)_34%,rgba(255,255,255,0.2)_68%,rgba(255,255,255,0.36)_100%)]" />
-      <div className="pointer-events-none absolute inset-x-0 top-[7.8rem] z-0 h-[6rem] bg-gradient-to-b from-transparent via-[#f7faff]/58 to-[#f7faff]" />
-      <div className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(circle_at_84%_16%,rgba(255,255,255,0.28),transparent_34%)]" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[12.75rem] bg-[linear-gradient(90deg,rgba(255,255,255,0.98)_0%,rgba(255,255,255,0.88)_39%,rgba(255,255,255,0.16)_76%,rgba(255,255,255,0.08)_100%)]" />
+      <div className="pointer-events-none absolute inset-x-0 top-[8.5rem] z-0 h-20 bg-gradient-to-b from-transparent to-[#f7f7ff]" />
 
       <div className="relative z-10">
-        <h2 className="max-w-[13.5rem] text-[1.55rem] font-extrabold leading-[1.16] tracking-[-0.035em] text-[#0b1744]">
+        <h2 className="max-w-[13.5rem] text-[1.55rem] font-extrabold leading-[1.16] tracking-[-0.035em] text-[#07184a]">
           Energy Usage
         </h2>
         <p className="mt-1.5 max-w-[14rem] text-[0.82rem] font-medium tracking-[-0.01em] text-[#8a97b5]">
@@ -236,26 +235,30 @@ function RecentTrendCard() {
 
         <div className="mt-3.5 flex items-center gap-5 text-[0.7rem] font-semibold text-[#7a86a3]">
           <span className="inline-flex items-center gap-2">
-            <span className="h-1.5 w-7 rounded-full bg-[#f6ae13]" />
+            <span className="h-1.5 w-7 rounded-full bg-gradient-to-r from-[#3b82f6] to-[#7457f6]" />
             This Week
           </span>
           <span className="inline-flex items-center gap-2">
-            <span className="h-1.5 w-7 rounded-full border-t-2 border-dashed border-[#a9c5ff]" />
+            <span className="h-1.5 w-7 rounded-full border-t-2 border-dashed border-[#a9a7f7]" />
             Last Week
           </span>
         </div>
 
-        <div className="relative mt-[1.125rem] h-[18.8rem] overflow-hidden rounded-[1.75rem] bg-white/90 p-[1.125rem] shadow-[0_12px_28px_rgba(30,64,175,0.08)]">
+        <div className="relative mt-[1.125rem] h-[18.8rem] overflow-hidden rounded-[1.75rem] border border-white/90 bg-white/82 p-[1.125rem] shadow-[inset_0_1px_0_rgba(255,255,255,0.98),0_14px_30px_rgba(79,70,190,0.09)] backdrop-blur-md">
           <svg className="h-full w-full" viewBox="0 0 360 280" role="img" aria-label="Electricity usage trend chart">
             <defs>
               <linearGradient id="electricityTrendArea" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stopColor="#f6ae13" stopOpacity="0.28" />
-                <stop offset="55%" stopColor="#f6ae13" stopOpacity="0.10" />
-                <stop offset="100%" stopColor="#f6ae13" stopOpacity="0" />
+                <stop offset="0%" stopColor="#7457f6" stopOpacity="0.28" />
+                <stop offset="58%" stopColor="#6f73f6" stopOpacity="0.12" />
+                <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
+              </linearGradient>
+              <linearGradient id="electricityTrendStroke" x1="42" x2="348" y1="0" y2="0" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#3b82f6" />
+                <stop offset="100%" stopColor="#7457f6" />
               </linearGradient>
             </defs>
             {[36, 74, 112, 150, 188, 226].map((y) => (
-              <line key={y} x1="34" x2="348" y1={y} y2={y} stroke="#edf2fb" strokeWidth="1" />
+              <line key={y} x1="34" x2="348" y1={y} y2={y} stroke="#e7eaf7" strokeDasharray="3 4" strokeWidth="1" />
             ))}
             <text x="4" y="18" fill="#7a86a3" fontSize="10" fontWeight="600">kWh</text>
             {[20, 16, 12, 8, 4, 0].map((tick, index) => (
@@ -270,7 +273,8 @@ function RecentTrendCard() {
             <path
               d="M42 214 C70 224 82 202 96 194 C120 178 135 156 150 150 C172 140 184 112 202 108 C224 104 240 186 255 198 C282 218 292 164 312 154 C330 144 340 138 348 132"
               fill="none"
-              stroke="#a9c5ff"
+              stroke="#a9a7f7"
+              strokeOpacity="0.72"
               strokeDasharray="6 7"
               strokeLinecap="round"
               strokeWidth="3"
@@ -278,7 +282,7 @@ function RecentTrendCard() {
             <path
               d="M42 186 C66 170 78 156 96 142 C124 120 137 76 150 74 C176 70 179 44 202 36 C228 28 233 154 255 170 C278 190 294 116 312 106 C328 96 338 86 348 74"
               fill="none"
-              stroke="#f6ae13"
+              stroke="url(#electricityTrendStroke)"
               strokeLinecap="round"
               strokeWidth="4"
             />
@@ -291,7 +295,7 @@ function RecentTrendCard() {
               [312, 106],
               [348, 74],
             ].map(([x, y]) => (
-              <circle key={`${x}-${y}`} cx={x} cy={y} r="5.5" fill="#fff" stroke="#f6ae13" strokeWidth="3" />
+              <circle key={`${x}-${y}`} cx={x} cy={y} r="5.5" fill="#fff" stroke="#685cf5" strokeWidth="3" />
             ))}
             {["00:00", "04:00", "08:00", "12:00", "16:00", "20:00", "24:00"].map((label, index) => (
               <text key={label} x={42 + index * 51} y="268" fill="#7a86a3" fontSize="10" textAnchor="middle">
@@ -301,39 +305,32 @@ function RecentTrendCard() {
           </svg>
         </div>
 
-        <div className="mx-auto mt-3.5 grid h-11 w-full grid-cols-4 rounded-full bg-[#eef3ff] p-1 text-center text-[0.72rem] font-semibold text-[#46526f] shadow-[inset_0_1px_0_rgba(255,255,255,0.95)]">
+        <div className="mx-auto mt-3.5 grid h-11 w-full grid-cols-4 rounded-full bg-white/58 p-1 text-center text-[0.72rem] font-semibold text-[#46526f] shadow-[inset_0_1px_0_rgba(255,255,255,0.98),0_9px_22px_rgba(79,70,190,0.07)] backdrop-blur-md">
           <span className="flex items-center justify-center rounded-full">Hourly</span>
-          <span className="flex items-center justify-center rounded-full bg-white text-[#f2a100] shadow-[0_6px_16px_rgba(40,70,150,0.12)]">Daily</span>
+          <span className="flex items-center justify-center rounded-full bg-white text-[#6658f5] shadow-[0_6px_16px_rgba(79,70,190,0.13)]">Daily</span>
           <span className="flex items-center justify-center rounded-full">Weekly</span>
           <span className="flex items-center justify-center rounded-full">Monthly</span>
         </div>
 
-        <div className="mt-4 grid min-h-[7.8rem] grid-cols-3 rounded-[1.6rem] bg-white/92 px-2 py-4 shadow-[0_12px_28px_rgba(30,64,175,0.08)]">
+        <div className="mt-5 grid w-full grid-cols-3 items-center gap-1.5">
           <TrendStat
-            iconSrc={`${electricityAssetBase}/3%20bar%20graph%20icon.png`}
+            backgroundSrc={`${electricityAssetBase}/average-this-week.png`}
             label="Average This Week"
             value="9.6"
             unit="kWh"
-            subtext="↑ 12.4% vs last week"
-            subtextClassName="text-[#27b86f]"
           />
           <TrendStat
-            iconSrc={`${electricityAssetBase}/Ligthingning-icon.png`}
+            backgroundSrc={`${electricityAssetBase}/total-this-week.png`}
             label="Total This Week"
             value="67.2"
             unit="kWh"
-            subtext="↑ 8.7% vs last week"
-            subtextClassName="text-[#27b86f]"
-            withDivider
           />
           <TrendStat
-            iconSrc={`${electricityAssetBase}/Calender%20Icon.png`}
+            backgroundSrc={`${electricityAssetBase}/highest-this-week.png`}
             label="Highest Day"
             value="18.3"
             unit="kWh"
             subtext="Friday"
-            subtextClassName="text-[#7a5cff]"
-            withDivider
           />
         </div>
       </div>
@@ -342,32 +339,40 @@ function RecentTrendCard() {
 }
 
 function TrendStat({
-  iconSrc,
+  backgroundSrc,
   label,
   value,
   unit,
   subtext,
-  subtextClassName,
-  withDivider = false,
 }: {
-  iconSrc: string;
+  backgroundSrc: string;
   label: string;
   value: string;
   unit: string;
-  subtext: string;
-  subtextClassName: string;
-  withDivider?: boolean;
+  subtext?: string;
 }) {
   return (
-    <div className={`min-w-0 px-2.5 text-left ${withDivider ? "border-l border-slate-200/80" : ""}`}>
-      <AssetImage src={iconSrc} alt="" className="mb-2 h-10 w-10 object-contain" />
-      <p className="min-h-[2rem] text-[0.6rem] font-semibold leading-[1rem] tracking-[-0.015em] text-[#7a86a3]">{label}</p>
-      <p className="mt-1.5 flex items-baseline gap-1 whitespace-nowrap text-[1.22rem] font-extrabold leading-none tracking-[-0.04em] text-[#07184a]">
-        <span>{value}</span>
-        <span className="text-[0.56rem] font-bold tracking-normal">{unit}</span>
-      </p>
-      <p className={`mt-1.5 text-[0.52rem] font-bold leading-3 tracking-[-0.01em] ${subtextClassName}`}>{subtext}</p>
-    </div>
+    <article className="relative isolate h-28 w-full min-w-0 overflow-hidden rounded-[1.375rem] bg-transparent">
+      <AssetImage
+        src={backgroundSrc}
+        alt=""
+        className="pointer-events-none absolute inset-0 z-0 h-full w-full rounded-[1.375rem] object-fill object-center select-none"
+      />
+      <div className="pointer-events-none absolute inset-0 z-10">
+        <p className="absolute left-[3.25rem] right-2 top-[1.0625rem] text-[0.59375rem] font-bold leading-[1.15] tracking-[-0.01em] text-[#4e5978]">
+          {label}
+        </p>
+        <p className="absolute bottom-7 left-4 flex items-baseline gap-[0.1875rem] whitespace-nowrap font-extrabold leading-none tracking-[-0.045em] text-[#07184a]">
+          <span className="text-[1.5625rem]">{value}</span>
+          <span className="whitespace-nowrap text-[0.59375rem] font-bold tracking-normal text-[#66738f]">{unit}</span>
+        </p>
+        {subtext ? (
+          <p className="absolute bottom-3 left-4 text-[0.625rem] font-bold leading-none text-[#22c3ca]">
+            {subtext}
+          </p>
+        ) : null}
+      </div>
+    </article>
   );
 }
 
