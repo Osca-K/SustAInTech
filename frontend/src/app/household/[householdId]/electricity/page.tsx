@@ -1,8 +1,12 @@
 ﻿"use client";
 
-import { use } from "react";
+import { use, useEffect, useState } from "react";
 
 import { ResidentMobileShell } from "@/components/resident/ResidentMobileShell";
+import {
+  readResidentElectricityDeviceState,
+  writeResidentElectricityDeviceState,
+} from "@/lib/residentElectricityDeviceState";
 
 type ElectricityPageProps = {
   params: Promise<{
@@ -12,11 +16,20 @@ type ElectricityPageProps = {
 
 const electricityAssetBase = "/assets/resident/electricity";
 
-const devices = [
+type ElectricityDevice = {
+  name: string;
+  room: string;
+  state: string;
+  iconSrc: string;
+  enabled: boolean;
+  storageKey?: "washingMachine" | "dishwasher";
+};
+
+const devices: ElectricityDevice[] = [
   { name: "Smart Meter", room: "Main Line", state: "Active", iconSrc: `${electricityAssetBase}/Smater%20Meter.png`, enabled: true },
   { name: "Air Conditioner", room: "Living Room", state: "Active", iconSrc: `${electricityAssetBase}/Air%20Conditioner.png`, enabled: true },
   { name: "Fridge", room: "Kitchen", state: "Active", iconSrc: `${electricityAssetBase}/Fridge.png`, enabled: true },
-  { name: "Washing Machine", room: "Laundry Room", state: "Offline", iconSrc: `${electricityAssetBase}/Washing%20Machine.png`, enabled: false },
+  { name: "Washing Machine", room: "Laundry Room", state: "Offline", iconSrc: `${electricityAssetBase}/Washing%20Machine.png`, enabled: false, storageKey: "washingMachine" },
   { name: "Water Heater", room: "Bathroom", state: "Scheduled", iconSrc: `${electricityAssetBase}/Water%20Heater.png`, enabled: true },
 ];
 
@@ -30,6 +43,35 @@ const categories = [
 
 export default function HouseholdElectricityPage({ params }: ElectricityPageProps) {
   const { householdId } = use(params);
+  const [deviceStates, setDeviceStates] = useState<Record<string, boolean>>(() =>
+    Object.fromEntries(devices.map((device) => [device.name, device.enabled])),
+  );
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      const storedState = readResidentElectricityDeviceState(householdId);
+
+      setDeviceStates((currentStates) => ({
+        ...currentStates,
+        "Washing Machine": storedState.washingMachine,
+      }));
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [householdId]);
+
+  const toggleDevice = (device: ElectricityDevice) => {
+    const nextEnabled = !deviceStates[device.name];
+    setDeviceStates((currentStates) => ({ ...currentStates, [device.name]: nextEnabled }));
+
+    if (device.storageKey) {
+      const storedState = readResidentElectricityDeviceState(householdId);
+      writeResidentElectricityDeviceState(householdId, {
+        ...storedState,
+        [device.storageKey]: nextEnabled,
+      });
+    }
+  };
 
   return (
     <ResidentMobileShell householdId={householdId}>
@@ -39,7 +81,7 @@ export default function HouseholdElectricityPage({ params }: ElectricityPageProp
         <ElectricitySummaryCards />
         <ScanMeterCard />
         <RecentTrendCard />
-        <DevicesCard />
+        <DevicesCard deviceStates={deviceStates} onToggleDevice={toggleDevice} />
         <CategoryCard />
         <MonitoringCard />
       </div>
@@ -376,7 +418,13 @@ function TrendStat({
   );
 }
 
-function DevicesCard() {
+function DevicesCard({
+  deviceStates,
+  onToggleDevice,
+}: {
+  deviceStates: Record<string, boolean>;
+  onToggleDevice: (device: ElectricityDevice) => void;
+}) {
   return (
     <section
       className="mt-5 rounded-[2rem] border border-[rgba(220,230,255,0.7)] bg-[linear-gradient(145deg,#ffffff,#f6f9ff)] p-5 shadow-[0_18px_45px_rgba(30,64,175,0.10)]"
@@ -403,11 +451,15 @@ function DevicesCard() {
       </div>
 
       <div className="mt-5 space-y-3">
-        {devices.map((device) => (
-          <article
-            key={device.name}
-            className="flex min-h-[5.2rem] items-center gap-2.5 rounded-[1.45rem] bg-white px-3 py-3 shadow-[0_12px_28px_rgba(30,64,175,0.07)] ring-1 ring-slate-100/80"
-          >
+        {devices.map((device) => {
+          const enabled = deviceStates[device.name] ?? device.enabled;
+          const displayedState = device.storageKey && enabled ? "Active" : device.state;
+
+          return (
+            <article
+              key={device.name}
+              className="flex min-h-[5.2rem] items-center gap-2.5 rounded-[1.45rem] bg-white px-3 py-3 shadow-[0_12px_28px_rgba(30,64,175,0.07)] ring-1 ring-slate-100/80"
+            >
             <span className="flex h-[4.5rem] w-[4.5rem] shrink-0 items-center justify-center overflow-hidden rounded-[1.375rem] bg-[linear-gradient(145deg,#f7faff,#eef4ff)] shadow-[0_8px_18px_rgba(124,145,201,0.12)] ring-1 ring-blue-50/80">
               <span className="flex h-[3.625rem] w-[3.625rem] items-center justify-center overflow-hidden rounded-[1.125rem]">
                 <AssetImage
@@ -421,18 +473,26 @@ function DevicesCard() {
               <p className="whitespace-normal text-[0.88rem] font-bold leading-[1.08rem] tracking-[-0.025em] text-[#07184a]">{device.name}</p>
               <p className="mt-1 whitespace-nowrap text-[0.72rem] font-medium text-[#7a86a3]">{device.room}</p>
             </div>
-            <DeviceStatusDot state={device.state} />
+            <DeviceStatusDot state={displayedState} />
             <button
               aria-label={`Edit ${device.name}`}
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-[#3c78ff] shadow-[0_8px_18px_rgba(30,64,175,0.10)] ring-1 ring-slate-100"
             >
               <ElectricIcon name="edit" className="h-4 w-4" />
             </button>
-            <span className={`relative h-7 w-12 shrink-0 rounded-full p-0.5 transition-colors ${device.enabled ? "bg-gradient-to-r from-[#557dff] to-[#3362f5]" : "bg-[#dce3f2]"}`}>
-              <span className={`block h-6 w-6 rounded-full bg-white shadow-[0_4px_10px_rgba(15,23,42,0.16)] transition-transform ${device.enabled ? "translate-x-5" : ""}`} />
-            </span>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={enabled}
+              aria-label={`${enabled ? "Turn off" : "Turn on"} ${device.name}`}
+              onClick={() => onToggleDevice(device)}
+              className={`relative h-7 w-12 shrink-0 rounded-full p-0.5 transition-colors ${enabled ? "bg-gradient-to-r from-[#557dff] to-[#3362f5]" : "bg-[#dce3f2]"}`}
+            >
+              <span className={`block h-6 w-6 rounded-full bg-white shadow-[0_4px_10px_rgba(15,23,42,0.16)] transition-transform ${enabled ? "translate-x-5" : ""}`} />
+            </button>
           </article>
-        ))}
+          );
+        })}
       </div>
 
       <div className="mt-5 grid grid-cols-[1fr_1fr] gap-3">

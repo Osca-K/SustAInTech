@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ReactNode } from "react";
 
 import { ResidentMobileShell } from "@/components/resident/ResidentMobileShell";
+import { WaterSystemsCard } from "@/components/water/WaterSystemsCard";
 import { WaterUsageChartCard } from "@/components/water/WaterUsageChartCard";
 
 
@@ -28,6 +29,7 @@ export default async function HouseholdWaterPage({ params }: WaterPageProps) {
           <WaterMetricGrid />
           <WaterMeterCard householdId={householdId} />
           <WaterUsageChartCard />
+          <WaterSystemsCard householdId={householdId} />
         </div>
       </div>
     </ResidentMobileShell>
@@ -87,35 +89,39 @@ function WaterMetricGrid() {
     <section className="grid grid-cols-2 gap-2.5">
       <WaterMetricCard
         background="water-active-fixtures-card.png"
+        eyebrow="Water Use"
         title="Active Fixtures"
         value="3"
-        supporting="Running now"
+        supporting="Fixtures running right now"
         valueClassName="text-[#3978f5]"
+        liftDetails
       />
       <WaterMetricCard
         background="water-leak-status-card.png"
+        eyebrow="Leak Status"
         title="Leak Status"
-        value="All Clear"
+        value="Clear"
         supporting="No leaks detected"
-        valueClassName="text-[#45b89a]"
-        compactValue
+        valueClassName="text-[#368f99]/80"
+        liftDetails
       />
       <WaterMetricCard
         background="water-cost-card.png"
+        eyebrow="Spend"
         title="Today's Cost"
         value="$0.86"
-        supporting={"\u2193 8% vs yesterday"}
-        valueClassName="text-[#715bf2]"
-        supportingClassName="text-[#42a979]"
+        supporting="Water usage so far today"
+        valueClassName="text-[#715bf2]/70"
+        liftDetails
       />
       <WaterMetricCard
         background="water-weekly-average-card.png"
+        eyebrow="Insight"
         title="Weekly Average"
         value="196 L"
-        supporting={"\u2193 5% vs last week"}
-        valueClassName="text-[#3978f5]"
-        supportingClassName="text-[#42a979]"
-        compactValue
+        supporting="Your 7-day water average"
+        valueClassName="text-[#3978f5]/70"
+        liftDetails
       />
     </section>
   );
@@ -123,33 +129,42 @@ function WaterMetricGrid() {
 
 function WaterMetricCard({
   background,
+  eyebrow,
   title,
   value,
   supporting,
   valueClassName,
-  supportingClassName = "text-[#71809f]",
-  compactValue = false,
+  liftDetails = false,
 }: {
   background: string;
+  eyebrow: string;
   title: string;
   value: string;
   supporting: string;
   valueClassName: string;
-  supportingClassName?: string;
-  compactValue?: boolean;
+  liftDetails?: boolean;
 }) {
   return (
     <article
       className="relative aspect-[4/3] min-w-0 overflow-hidden rounded-[1.55rem] bg-transparent bg-cover bg-center bg-no-repeat shadow-[0_12px_28px_rgba(48,93,170,0.09)]"
       style={{ backgroundImage: `url("${waterAssetBase}/${background}")` }}
     >
-      <div className="absolute inset-y-0 left-[43%] right-2 flex flex-col justify-center pt-1">
-        <h2 className="text-[0.7rem] font-bold leading-tight text-[#0b1744]">{title}</h2>
-        <p className={`mt-2 font-extrabold leading-none tracking-[-0.04em] ${compactValue ? "text-[1.3rem]" : "text-[1.85rem]"} ${valueClassName}`}>
-          {value}
-        </p>
-        <p className={`mt-2 whitespace-nowrap text-[0.64rem] font-medium ${supportingClassName}`}>
+      <p className="absolute left-[35%] top-[22%] z-10 whitespace-nowrap text-[0.43rem] font-semibold uppercase leading-none tracking-[0.28em] text-[#7d8ba8]">
+        {eyebrow}
+      </p>
+      <div className={`absolute left-[8%] z-10 w-[70%] ${liftDetails ? "top-[45%]" : "top-[61%]"}`}>
+        <h2 className="text-[clamp(0.76rem,3.15vw,0.95rem)] font-medium leading-tight tracking-[-0.025em] text-[#111b42]">
+          {title}
+        </h2>
+        <p className="mt-1.5 max-w-[8rem] text-[clamp(0.54rem,2.3vw,0.68rem)] font-normal leading-snug text-[#71809b]">
           {supporting}
+        </p>
+      </div>
+      <div className="absolute bottom-[8%] right-[7%] z-10 text-right">
+        <p
+          className={`whitespace-nowrap text-[clamp(1.55rem,6.7vw,2rem)] font-medium leading-none tracking-[-0.045em] ${valueClassName}`}
+        >
+          {value}
         </p>
       </div>
     </article>
