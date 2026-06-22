@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ReactNode } from "react";
 
 import { ResidentMobileShell } from "@/components/resident/ResidentMobileShell";
+import { LeakMonitoringCard } from "@/components/water/LeakMonitoringCard";
 import { WaterSystemsCard } from "@/components/water/WaterSystemsCard";
 import { WaterUsageByCategoryCard } from "@/components/water/WaterUsageByCategoryCard";
 import { WaterUsageChartCard } from "@/components/water/WaterUsageChartCard";
@@ -32,6 +33,7 @@ export default async function HouseholdWaterPage({ params }: WaterPageProps) {
           <WaterUsageChartCard />
           <WaterSystemsCard householdId={householdId} />
           <WaterUsageByCategoryCard />
+          <LeakMonitoringCard />
         </div>
       </div>
     </ResidentMobileShell>
