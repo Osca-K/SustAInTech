@@ -36,12 +36,12 @@ export function ResidentBottomNav({ householdId }: { householdId: string }) {
     },
     {
       label: "Recycling",
-      href: `${base}/waste`,
-      active: (value) => value.startsWith(`${base}/waste`),
+      href: `${base}/recycling`,
+      active: (value) => value.startsWith(`${base}/recycling`) || value.startsWith(`${base}/waste`),
       icon: RecycleIcon,
     },
     {
-      label: "Analytics",
+      label: "Impact",
       href: `${base}/analytics`,
       active: (value) => value.startsWith(`${base}/analytics`),
       icon: BarChartIcon,
