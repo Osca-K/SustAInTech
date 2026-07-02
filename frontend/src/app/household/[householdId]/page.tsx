@@ -21,8 +21,8 @@ const services: Array<{
   plan: string;
   tone: Tone;
 }> = [
-  { name: "Water Monitoring", detail: "Meter WTR-2048-L", status: "Active", plan: "Paid service", tone: "water" },
   { name: "Electricity Monitoring", detail: "Meter ELEC-7712", status: "Active", plan: "Paid service", tone: "electricity" },
+  { name: "Water Monitoring", detail: "Meter WTR-2048-L", status: "Active", plan: "Paid service", tone: "water" },
   { name: "Recycling", detail: "Smart waste support enabled", status: "Active", plan: "Free community service", tone: "recycling" },
 ];
 
@@ -39,8 +39,8 @@ const saverOverview: Array<{
 ];
 
 const today: Array<{ label: string; value: string; status: string; tone: Tone }> = [
-  { label: "Water", value: "248 L", status: "Normal usage", tone: "water" },
   { label: "Electricity", value: "18.4 kWh", status: "Stable", tone: "electricity" },
+  { label: "Water", value: "248 L", status: "Normal usage", tone: "water" },
   { label: "Recycling", value: "3 items sorted", status: "1 alert", tone: "recycling" },
   { label: "Impact", value: "Good", status: "On track", tone: "impact" },
 ];
@@ -57,8 +57,8 @@ export default async function HomePage({ params }: HomePageProps) {
   const base = `/household/${householdId}`;
 
   const actions = [
-    { label: "Scan Water Meter", image: "/assets/resident/home/scan-water-meter.png", href: `${base}/meter-upload` },
     { label: "Scan Electric Meter", image: "/assets/resident/home/scan-electric-meter.png", href: `${base}/electricity` },
+    { label: "Scan Water Meter", image: "/assets/resident/home/scan-water-meter.png", href: `${base}/meter-upload` },
     { label: "Scan Waste", image: "/assets/resident/home/scan-waste.png", href: `${base}/waste` },
     { label: "Household Settings", image: "/assets/resident/home/household-settings.png", href: `${base}/settings` },
   ];

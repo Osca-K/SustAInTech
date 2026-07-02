@@ -8,8 +8,8 @@ type PageProps = { params: Promise<{ householdId: string }> };
 type Tone = "water" | "electricity" | "recycling";
 
 const activeServices: Array<{ name: string; detail: string; plan: string; price: string; footnote: string; tone: Tone }> = [
-  { name: "Water Monitoring", detail: "Meter: WTR-2048-L", plan: "Paid Service", price: "R129 / month", footnote: "Next billing: 05 Jun 2025", tone: "water" },
   { name: "Electricity Monitoring", detail: "Meter: ELEC-7712", plan: "Paid Service", price: "R149 / month", footnote: "Next billing: 05 Jun 2025", tone: "electricity" },
+  { name: "Water Monitoring", detail: "Meter: WTR-2048-L", plan: "Paid Service", price: "R129 / month", footnote: "Next billing: 05 Jun 2025", tone: "water" },
   { name: "Recycling", detail: "Smart waste routing enabled", plan: "Free Service", price: "Always free", footnote: "Community service", tone: "recycling" },
 ];
 

@@ -26,16 +26,16 @@ export function ResidentBottomNav({ householdId }: { householdId: string }) {
       icon: HomeIcon,
     },
     {
-      label: "Water",
-      href: `${base}/water`,
-      active: (value) => value === `${base}/water` || value.startsWith(`${base}/meter-upload`),
-      icon: DropletsIcon,
-    },
-    {
       label: "Electricity",
       href: `${base}/electricity`,
       active: (value) => value.startsWith(`${base}/electricity`),
       icon: ZapIcon,
+    },
+    {
+      label: "Water",
+      href: `${base}/water`,
+      active: (value) => value === `${base}/water` || value.startsWith(`${base}/meter-upload`),
+      icon: DropletsIcon,
     },
     {
       label: "Recycling",
