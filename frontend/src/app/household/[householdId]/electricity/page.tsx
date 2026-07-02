@@ -1,10 +1,15 @@
 ﻿"use client";
 
 import { use, useEffect, useState } from "react";
+import Link from "next/link";
 
 import { ResidentMobileShell } from "@/components/resident/ResidentMobileShell";
 import {
+  getElectricityDeviceStatus,
+  readResidentCustomElectricityDevices,
   readResidentElectricityDeviceState,
+  ResidentCustomElectricityDevice,
+  writeResidentCustomElectricityDevices,
   writeResidentElectricityDeviceState,
 } from "@/lib/residentElectricityDeviceState";
 
@@ -46,6 +51,7 @@ export default function HouseholdElectricityPage({ params }: ElectricityPageProp
   const [deviceStates, setDeviceStates] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(devices.map((device) => [device.name, device.enabled])),
   );
+  const [customDevices, setCustomDevices] = useState<ResidentCustomElectricityDevice[]>([]);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -55,9 +61,18 @@ export default function HouseholdElectricityPage({ params }: ElectricityPageProp
         ...currentStates,
         "Washing Machine": storedState.washingMachine,
       }));
+      setCustomDevices(readResidentCustomElectricityDevices(householdId));
     });
 
-    return () => window.cancelAnimationFrame(frame);
+    const refresh = () => setCustomDevices(readResidentCustomElectricityDevices(householdId));
+    window.addEventListener("focus", refresh);
+    window.addEventListener("resident-electricity-devices-updated", refresh);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("focus", refresh);
+      window.removeEventListener("resident-electricity-devices-updated", refresh);
+    };
   }, [householdId]);
 
   const toggleDevice = (device: ElectricityDevice) => {
@@ -73,6 +88,14 @@ export default function HouseholdElectricityPage({ params }: ElectricityPageProp
     }
   };
 
+  const toggleCustomDevice = (device: ResidentCustomElectricityDevice) => {
+    const next = customDevices.map((item) =>
+      item.id === device.id ? { ...item, isOn: !item.isOn } : item,
+    );
+    setCustomDevices(next);
+    writeResidentCustomElectricityDevices(householdId, next);
+  };
+
   return (
     <ResidentMobileShell householdId={householdId}>
       <div className="min-h-screen bg-[#f5f8ff] px-4 pb-8 pt-4 font-sans text-[#0b1744]">
@@ -81,7 +104,13 @@ export default function HouseholdElectricityPage({ params }: ElectricityPageProp
         <ElectricitySummaryCards />
         <ScanMeterCard />
         <RecentTrendCard />
-        <DevicesCard deviceStates={deviceStates} onToggleDevice={toggleDevice} />
+        <DevicesCard
+          householdId={householdId}
+          deviceStates={deviceStates}
+          customDevices={customDevices}
+          onToggleDevice={toggleDevice}
+          onToggleCustomDevice={toggleCustomDevice}
+        />
         <CategoryCard />
         <MonitoringCard />
       </div>
@@ -419,12 +448,31 @@ function TrendStat({
 }
 
 function DevicesCard({
+  householdId,
   deviceStates,
+  customDevices,
   onToggleDevice,
+  onToggleCustomDevice,
 }: {
+  householdId: string;
   deviceStates: Record<string, boolean>;
+  customDevices: ResidentCustomElectricityDevice[];
   onToggleDevice: (device: ElectricityDevice) => void;
+  onToggleCustomDevice: (device: ResidentCustomElectricityDevice) => void;
 }) {
+  const builtInStatuses = devices.map((device) => {
+    const enabled = deviceStates[device.name] ?? device.enabled;
+    return !enabled ? "Off" : device.storageKey ? "Active" : device.state;
+  });
+  const customStatuses = customDevices.map((device) => getElectricityDeviceStatus(device));
+  const statuses = [...builtInStatuses, ...customStatuses];
+  const summary = {
+    devices: statuses.length,
+    active: statuses.filter((status) => status === "Active").length,
+    scheduled: statuses.filter((status) => status === "Scheduled").length,
+    offline: statuses.filter((status) => status === "Off" || status === "Offline").length,
+  };
+
   return (
     <section
       className="mt-5 rounded-[2rem] border border-[rgba(220,230,255,0.7)] bg-[linear-gradient(145deg,#ffffff,#f6f9ff)] p-5 shadow-[0_18px_45px_rgba(30,64,175,0.10)]"
@@ -444,10 +492,10 @@ function DevicesCard({
       </div>
 
       <div className="mt-6 grid grid-cols-4 gap-2 rounded-[1.45rem] bg-white/78 p-2 shadow-[0_12px_30px_rgba(30,64,175,0.08)] ring-1 ring-slate-100/80">
-        <DeviceSummaryCard iconSrc={`${electricityAssetBase}/Total%20Devices.png`} label="Devices" value="5" />
-        <DeviceSummaryCard iconSrc={`${electricityAssetBase}/Active.png`} label="Active" value="3" />
-        <DeviceSummaryCard iconSrc={`${electricityAssetBase}/Schedule.png`} label="Schedule" value="1" />
-        <DeviceSummaryCard iconSrc={`${electricityAssetBase}/Ofline.png`} label="Offline" value="1" />
+        <DeviceSummaryCard iconSrc={`${electricityAssetBase}/Total%20Devices.png`} label="Devices" value={String(summary.devices)} />
+        <DeviceSummaryCard iconSrc={`${electricityAssetBase}/Active.png`} label="Active" value={String(summary.active)} />
+        <DeviceSummaryCard iconSrc={`${electricityAssetBase}/Schedule.png`} label="Schedule" value={String(summary.scheduled)} />
+        <DeviceSummaryCard iconSrc={`${electricityAssetBase}/Ofline.png`} label="Offline" value={String(summary.offline)} />
       </div>
 
       <div className="mt-5 space-y-3">
@@ -474,12 +522,13 @@ function DevicesCard({
               <p className="mt-1 whitespace-nowrap text-[0.72rem] font-medium text-[#7a86a3]">{device.room}</p>
             </div>
             <DeviceStatusDot state={displayedState} />
-            <button
+            <Link
+              href={`/household/${householdId}/electricity/devices?preset=${encodeURIComponent(device.name)}`}
               aria-label={`Edit ${device.name}`}
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-[#3c78ff] shadow-[0_8px_18px_rgba(30,64,175,0.10)] ring-1 ring-slate-100"
             >
               <ElectricIcon name="edit" className="h-4 w-4" />
-            </button>
+            </Link>
             <button
               type="button"
               role="switch"
@@ -493,20 +542,37 @@ function DevicesCard({
           </article>
           );
         })}
+        {customDevices.map((device) => {
+          const status = getElectricityDeviceStatus(device);
+          return (
+            <article key={device.id} className="flex min-h-[5.2rem] items-center gap-2.5 rounded-[1.45rem] bg-white px-3 py-3 shadow-[0_12px_28px_rgba(30,64,175,0.07)] ring-1 ring-slate-100/80">
+              <span className="flex h-[4.5rem] w-[4.5rem] shrink-0 items-center justify-center overflow-hidden rounded-[1.375rem] bg-[#f5f8ff]">
+                <AssetImage src={`${electricityAssetBase}/appliances/${device.icon}`} alt="" className="h-16 w-16 object-cover" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[0.88rem] font-bold text-[#07184a]">{device.name}</p>
+                <p className="mt-1 text-[0.72rem] font-medium text-[#7a86a3]">{device.category}</p>
+              </div>
+              <DeviceStatusDot state={status} />
+              <Link href={`/household/${householdId}/electricity/devices?edit=${device.id}`} aria-label={`Edit ${device.name}`} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-[#3c78ff] shadow-sm ring-1 ring-slate-100"><ElectricIcon name="edit" className="h-4 w-4" /></Link>
+              <button type="button" role="switch" aria-checked={device.isOn} onClick={() => onToggleCustomDevice(device)} className={`relative h-7 w-12 shrink-0 rounded-full p-0.5 transition-colors ${device.isOn ? "bg-gradient-to-r from-[#557dff] to-[#3362f5]" : "bg-[#dce3f2]"}`}><span className={`block h-6 w-6 rounded-full bg-white shadow-md transition-transform ${device.isOn ? "translate-x-5" : ""}`} /></button>
+            </article>
+          );
+        })}
       </div>
 
       <div className="mt-5 grid grid-cols-[1fr_1fr] gap-3">
-        <button className="flex h-12 items-center justify-center gap-2 whitespace-nowrap rounded-[1.05rem] bg-gradient-to-br from-[#6b8cff] to-[#3d63f3] px-2 text-[0.78rem] font-bold text-white shadow-[0_12px_24px_rgba(61,99,243,0.22)]">
+        <Link href={`/household/${householdId}/electricity/devices`} className="flex h-12 items-center justify-center gap-2 whitespace-nowrap rounded-[1.05rem] bg-gradient-to-br from-[#6b8cff] to-[#3d63f3] px-2 text-[0.78rem] font-bold text-white shadow-[0_12px_24px_rgba(61,99,243,0.22)]">
           <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20">
             <ElectricIcon name="plus" className="h-4 w-4" />
           </span>
           Add New Device
-        </button>
-        <button className="flex h-12 items-center justify-center gap-1.5 whitespace-nowrap rounded-[1.05rem] bg-white px-2 text-[0.76rem] font-bold text-[#316bff] shadow-[0_10px_24px_rgba(30,64,175,0.06)] ring-1 ring-slate-100">
+        </Link>
+        <Link href={`/household/${householdId}/electricity/devices?view=all`} className="flex h-12 items-center justify-center gap-1.5 whitespace-nowrap rounded-[1.05rem] bg-white px-2 text-[0.76rem] font-bold text-[#316bff] shadow-[0_10px_24px_rgba(30,64,175,0.06)] ring-1 ring-slate-100">
           <ElectricIcon name="grid" className="h-4 w-4" />
           View All Devices
           <ElectricIcon name="chevronRight" className="h-4 w-4" />
-        </button>
+        </Link>
       </div>
     </section>
   );
@@ -535,6 +601,7 @@ function DeviceStatusDot({ state }: { state: string }) {
     Active: `${electricityAssetBase}/Active.png`,
     Scheduled: `${electricityAssetBase}/Schedule.png`,
     Offline: `${electricityAssetBase}/Ofline.png`,
+    Off: `${electricityAssetBase}/Ofline.png`,
   };
 
   return (
