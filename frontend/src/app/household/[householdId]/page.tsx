@@ -1,352 +1,191 @@
+import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { ReactNode } from "react";
 
-import { RecentMeterTrackingChart } from "@/components/household/RecentMeterTrackingChart";
-import { ResidentUsageChart } from "@/components/household/ResidentUsageChart";
-import { HouseholdRecommendationsPanel } from "@/components/recommendations/HouseholdRecommendationsPanel";
-import { ResidentActionTile } from "@/components/resident/ResidentActionTile";
-import { ResidentHeroCard } from "@/components/resident/ResidentHeroCard";
-import { ResidentMetricCard } from "@/components/resident/ResidentMetricCard";
-import { ResidentMetricStrip } from "@/components/resident/ResidentMetricStrip";
 import { ResidentMobileShell } from "@/components/resident/ResidentMobileShell";
-import { ResidentSectionCard } from "@/components/resident/ResidentSectionCard";
-import {
-  ApiError,
-  getHousehold,
-  getHouseholdInsights,
-  getHouseholdRecommendations,
-  getHouseholdMeterSubmissions,
-  getHouseholdMeterTrackingSummary,
-  getHouseholdMonthlyUsage,
-  HouseholdTrackingSummary,
-  HouseholdDetails,
-  HouseholdMonthlyUsageItem,
-  MeterSubmissionHistoryItem,
-  RecommendationItem,
-  WaterUsageInsightItem,
-} from "@/lib/api";
-import {
-  residentInsightSummary,
-  residentRecommendedStep,
-  residentUsageStatus,
-} from "@/lib/householdPortal";
 
-type ResidentDashboardPageProps = {
-  params: Promise<{
-    householdId: string;
-  }>;
+type HomePageProps = { params: Promise<{ householdId: string }> };
+type Tone = "water" | "electricity" | "recycling" | "impact";
+
+const household = {
+  name: "Household SV-H001",
+  houseNumber: "House 24",
+  area: "Soweto, Johannesburg",
+  connectedServices: 3,
 };
 
-function firstName(customerName: string) {
-  return customerName.split(" ")[0] || customerName;
-}
+const services: Array<{
+  name: string;
+  detail: string;
+  status: string;
+  plan: string;
+  tone: Tone;
+}> = [
+  { name: "Water Monitoring", detail: "Meter WTR-2048-L", status: "Active", plan: "Paid service", tone: "water" },
+  { name: "Electricity Monitoring", detail: "Meter ELEC-7712", status: "Active", plan: "Paid service", tone: "electricity" },
+  { name: "Recycling", detail: "Smart waste support enabled", status: "Active", plan: "Free community service", tone: "recycling" },
+];
 
-function formatCurrency(value: number | null | undefined) {
-  return value === null || value === undefined ? "Not available" : `R ${value.toFixed(2)}`;
-}
+const saverOverview: Array<{
+  label: string;
+  rank: string;
+  badge?: string;
+  note?: string;
+  tone: Tone;
+}> = [
+  { label: "Electricity", rank: "Top 5%", badge: "Leader", note: "Maintain this usage to stay in top 5%.", tone: "electricity" },
+  { label: "Water", rank: "Top 14%", note: "Save 30 L to reach top 10%.", tone: "water" },
+  { label: "Recycling", rank: "Top 9%", badge: "Ahead of area average", tone: "recycling" },
+];
 
-function formatConsumption(value: number | null | undefined) {
-  return value === null || value === undefined ? "Not available" : `${value.toFixed(1)} kL`;
-}
+const today: Array<{ label: string; value: string; status: string; tone: Tone }> = [
+  { label: "Water", value: "248 L", status: "Normal usage", tone: "water" },
+  { label: "Electricity", value: "18.4 kWh", status: "Stable", tone: "electricity" },
+  { label: "Recycling", value: "3 items sorted", status: "1 alert", tone: "recycling" },
+  { label: "Impact", value: "Good", status: "On track", tone: "impact" },
+];
 
-function usageStats(history: HouseholdMonthlyUsageItem[]) {
-  const latest = history.at(-1);
-  const total = history.reduce((sum, item) => sum + item.consumption_kL, 0);
-  return {
-    latest,
-    averageUsage: history.length ? total / history.length : null,
-  };
-}
+const toneClasses: Record<Tone, string> = {
+  water: "text-sky-500 bg-sky-50",
+  electricity: "text-amber-400 bg-amber-50",
+  recycling: "text-emerald-500 bg-emerald-50",
+  impact: "text-teal-500 bg-teal-50",
+};
 
-export default async function ResidentDashboardPage({
-  params,
-}: ResidentDashboardPageProps) {
+export default async function HomePage({ params }: HomePageProps) {
   const { householdId } = await params;
-  let household: HouseholdDetails;
-  let monthlyUsage: HouseholdMonthlyUsageItem[];
-  let insights: WaterUsageInsightItem[];
-  let trackingSummary: HouseholdTrackingSummary;
-  let meterSubmissions: MeterSubmissionHistoryItem[];
-  let recommendations: RecommendationItem[];
+  const base = `/household/${householdId}`;
 
-  try {
-    [
-      household,
-      monthlyUsage,
-      insights,
-      trackingSummary,
-      meterSubmissions,
-      recommendations,
-    ] = await Promise.all([
-      getHousehold(householdId),
-      getHouseholdMonthlyUsage(householdId),
-      getHouseholdInsights(householdId),
-      getHouseholdMeterTrackingSummary(householdId),
-      getHouseholdMeterSubmissions(householdId),
-      getHouseholdRecommendations(householdId).then((response) => response.recommendations),
-    ]);
-  } catch (error) {
-    if (error instanceof ApiError && error.status === 404) {
-      notFound();
-    }
-    throw error;
-  }
-
-  const history = [...monthlyUsage].sort((left, right) =>
-    left.statement_month.localeCompare(right.statement_month),
-  );
-  const stats = usageStats(history);
+  const actions = [
+    { label: "Scan Water Meter", image: "/assets/resident/home/scan-water-meter.png", href: `${base}/meter-upload` },
+    { label: "Scan Electric Meter", image: "/assets/resident/home/scan-electric-meter.png", href: `${base}/electricity` },
+    { label: "Scan Waste", image: "/assets/resident/home/scan-waste.png", href: `${base}/waste` },
+    { label: "Household Settings", image: "/assets/resident/home/household-settings.png", href: `${base}/settings` },
+  ];
 
   return (
     <ResidentMobileShell householdId={householdId}>
-      <div className="space-y-5 bg-[radial-gradient(circle_at_top,#d1fae5_0,#f8fafc_58%)] px-4 py-5">
-        <ResidentHeroCard accent="from-emerald-100 via-white to-cyan-50">
-          <Link
-            href="/household"
-            className="text-sm font-medium text-teal-700 hover:text-teal-900"
-          >
-            Switch household
-          </Link>
-          <h1 className="mt-3 text-3xl font-semibold text-slate-950">
-            Welcome back, {firstName(household.customer_name)}
-          </h1>
-          <p className="mt-2 text-sm text-slate-600">
-            Here is your latest household water-usage summary.
-          </p>
-        </ResidentHeroCard>
+      <div className="min-h-screen space-y-3 bg-[radial-gradient(circle_at_80px_20px,#e8fbf7_0,transparent_250px),#f8fafc] px-4 pb-4 pt-7 text-[#07133f]">
+        <header className="flex items-start justify-between gap-4 px-1">
+          <div>
+            <h1 className="text-[34px] font-bold leading-none tracking-[-0.04em]">Home</h1>
+            <p className="mt-3 flex items-center gap-1.5 text-lg font-semibold">Good morning, Ausca <span className="text-emerald-500"><LeafIcon /></span></p>
+            <p className="mt-1 text-xs text-slate-500">Your household services are connected and ready.</p>
+          </div>
+          <div className="flex gap-2 pt-2">
+            <GlassIcon label="Notifications"><BellIcon /><span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-white" /></GlassIcon>
+            <GlassIcon label="Profile"><ProfileIcon /></GlassIcon>
+          </div>
+        </header>
 
-        <ResidentMetricStrip>
-          <ResidentMetricCard
-            label="Latest water usage"
-            value={formatConsumption(stats.latest?.consumption_kL)}
-          />
-          <ResidentMetricCard
-            label="Average monthly usage"
-            value={formatConsumption(stats.averageUsage)}
-          />
-          <ResidentMetricCard
-            label="Latest municipal bill"
-            value={formatCurrency(stats.latest?.total_due)}
-          />
-          <ResidentMetricCard
-            label="Meter number"
-            value={household.meter_number ?? "Not available"}
-          />
-        </ResidentMetricStrip>
+        <section className="relative overflow-hidden rounded-[24px] border border-white bg-white/90 p-4 shadow-[0_8px_30px_rgba(15,23,42,.07)]">
+          <div className="relative min-h-[205px]">
+            <div className="relative z-10 max-w-[58%]">
+              <p className="text-[10px] font-bold tracking-wide text-teal-600">MY HOUSEHOLD</p>
+              <h2 className="mt-2 text-xl font-bold tracking-tight">{household.name}</h2>
+              <p className="mt-4 flex items-center gap-2 text-xs text-slate-600"><HomeOutline />{household.houseNumber}</p>
+              <p className="mt-2 flex items-center gap-2 text-xs text-slate-600"><PinIcon />{household.area}</p>
+              <span className="mt-4 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-2 text-[11px] font-semibold text-emerald-700">
+                <span className="grid h-5 w-5 place-items-center rounded-full bg-emerald-500 text-white"><CheckIcon /></span>
+                {household.connectedServices} services connected
+              </span>
+            </div>
+            <div className="absolute bottom-0 right-[-10px] top-3 w-[47%]">
+              <span className="absolute right-1 top-0 z-10 text-sky-500"><SignalIcon /></span>
+              <Image src="/assets/resident/home/connected-house.png" alt="Connected modern home" fill sizes="(max-width: 430px) 47vw, 190px" className="object-contain object-center" priority />
+            </div>
+          </div>
+          <div className="relative z-10 mt-3 grid min-w-0 grid-cols-3 gap-1.5">
+            {services.map((service) => (
+              <div key={service.name} className="flex min-w-0 min-h-12 items-center justify-center gap-1 rounded-2xl border border-slate-100 bg-white px-1 text-center text-[9px] font-semibold leading-3 shadow-sm">
+                <ServiceIcon tone={service.tone} compact /><span className="min-w-0">{service.name}</span>
+              </div>
+            ))}
+          </div>
+        </section>
 
-        <HouseholdRecommendationsPanel recommendations={recommendations} />
+        <Card title="TOP SAVER OVERVIEW">
+          <div className="grid min-w-0 grid-cols-3 divide-x divide-slate-100">
+            {saverOverview.map((item) => (
+              <div key={item.label} className="flex min-w-0 min-h-[158px] flex-col items-center px-1.5 text-center">
+                <ServiceIcon tone={item.tone} />
+                <p className="mt-1.5 break-words text-[10px] font-semibold">{item.label}</p>
+                <p className="mt-1.5 text-lg font-bold">{item.rank}</p>
+                {item.badge && <span className="mt-2 max-w-full rounded-full bg-emerald-50 px-1.5 py-1 text-[8px] font-semibold leading-3 text-emerald-700">{item.badge}</span>}
+                {item.note && <p className="mt-2 text-[8px] leading-3 text-slate-500">{item.note}</p>}
+              </div>
+            ))}
+          </div>
+        </Card>
 
-        <div className="space-y-5">
-          <ResidentUsageChart data={history} />
-          <LatestBillCard latest={stats.latest} />
-        </div>
+        <Card title="CONNECTED SERVICES">
+          <div className="divide-y divide-slate-100">
+            {services.map((service) => (
+              <Link href={service.tone === "water" ? `${base}/water` : service.tone === "electricity" ? `${base}/electricity` : `${base}/recycling`} key={service.name} className="grid grid-cols-[36px_1fr_auto_12px] items-center gap-2 py-2.5">
+                <ServiceIcon tone={service.tone} />
+                <div><p className="text-xs font-semibold">{service.name}</p><p className="mt-0.5 text-[10px] text-slate-500">{service.detail}</p></div>
+                <div className="text-right"><p className="text-[10px] font-medium text-emerald-600">{service.status}</p><span className={`mt-1 inline-block rounded-full px-2 py-0.5 text-[9px] ${service.tone === "recycling" ? "bg-emerald-50 text-emerald-700" : "bg-blue-50 text-blue-600"}`}>{service.plan}</span></div>
+                <span className="text-slate-500">›</span>
+              </Link>
+            ))}
+          </div>
+        </Card>
 
-        <div className="grid grid-cols-1 gap-3">
-          <ResidentInsightsCard insights={insights} />
-          <MeterUploadCard householdId={householdId} />
-          <WasteSortingCard householdId={householdId} />
-          <ElectricityTrackingCard householdId={householdId} />
-        </div>
+        <Card title="TODAY AT A GLANCE">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {today.map((item) => (
+              <div key={item.label} className="rounded-2xl border border-slate-100 bg-white p-3 shadow-sm">
+                <div className="flex items-center gap-1 text-[10px] font-semibold"><ServiceIcon tone={item.tone} compact />{item.label}</div>
+                <p className="mt-3 whitespace-nowrap text-lg font-bold">{item.value}</p>
+                <p className="mt-2 flex items-center gap-1.5 text-[9px] text-slate-500"><span className={`h-1.5 w-1.5 rounded-full ${item.status === "1 alert" ? "bg-amber-400" : "bg-emerald-500"}`} />{item.status}</p>
+              </div>
+            ))}
+          </div>
+        </Card>
 
-        <ResidentTrackingSection
-          summary={trackingSummary}
-          submissions={meterSubmissions}
-        />
+        <Card title="QUICK ACTIONS">
+          <div className="grid grid-cols-4 gap-2">
+            {actions.map((action) => (
+              <Link href={action.href} key={action.label} className="flex min-h-[105px] flex-col items-center justify-center rounded-2xl border border-slate-100 bg-white px-1.5 text-center shadow-sm">
+                <Image src={action.image} alt="" width={50} height={50} className="h-12 w-12 rounded-xl object-cover" />
+                <span className="mt-2 text-[10px] font-semibold leading-3">{action.label}</span>
+              </Link>
+            ))}
+          </div>
+        </Card>
+
+        <Link href={`${base}/subscriptions`} className="flex items-center gap-3 rounded-[22px] border border-white bg-white/90 p-3 shadow-[0_8px_30px_rgba(15,23,42,.06)]">
+          <span className="grid h-12 w-12 place-items-center rounded-2xl bg-violet-50 text-violet-600"><ShieldIcon /></span>
+          <span className="min-w-0 flex-1"><span className="block text-sm font-semibold">Subscriptions &amp; Services</span><span className="mt-0.5 block text-[10px] text-slate-500">Manage plan, service status, address, and notifications.</span></span>
+          <span className="text-2xl text-slate-600">›</span>
+        </Link>
       </div>
     </ResidentMobileShell>
   );
 }
 
-function LatestBillCard({ latest }: { latest: HouseholdMonthlyUsageItem | undefined }) {
-  return (
-    <ResidentSectionCard>
-      <h2 className="text-lg font-semibold text-slate-950">
-        Latest Municipal Statement
-      </h2>
-      {latest ? (
-        <dl className="mt-4 divide-y divide-slate-100 text-sm">
-          <BillRow label="Statement month" value={latest.statement_month_label} />
-          <BillRow label="Water usage" value={formatConsumption(latest.consumption_kL)} />
-          <BillRow
-            label="Water total"
-            value={formatCurrency(latest.water_total_including_vat)}
-          />
-          <BillRow label="Municipal total due" value={formatCurrency(latest.total_due)} />
-          <BillRow label="Due date" value={latest.due_date} />
-          <BillRow label="Invoice number" value={latest.invoice_number} />
-        </dl>
-      ) : (
-        <p className="mt-4 text-sm text-slate-500">
-          No municipal statement history is available yet.
-        </p>
-      )}
-      <p className="mt-4 rounded-lg border border-teal-100 bg-teal-50 px-3 py-2 text-sm text-teal-800">
-        Your municipal total may include water, sanitation, property rates, and
-        refuse charges.
-      </p>
-    </ResidentSectionCard>
-  );
+function Card({ title, children }: { title: string; children: ReactNode }) {
+  return <section className="rounded-[22px] border border-white bg-white/90 p-3.5 shadow-[0_8px_30px_rgba(15,23,42,.06)]"><h2 className="mb-3 text-xs font-bold">{title}</h2>{children}</section>;
 }
 
-function BillRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="grid gap-1 py-3 sm:grid-cols-[160px_minmax(0,1fr)]">
-      <dt className="text-slate-500">{label}</dt>
-      <dd className="font-medium text-slate-800">{value}</dd>
-    </div>
-  );
+function GlassIcon({ label, children }: { label: string; children: ReactNode }) {
+  return <button type="button" aria-label={label} className="relative grid h-12 w-12 place-items-center rounded-full border border-white bg-white/80 text-[#07133f] shadow-md backdrop-blur">{children}</button>;
 }
 
-function ResidentInsightsCard({
-  insights,
-}: {
-  insights: WaterUsageInsightItem[];
-}) {
-  const status = residentUsageStatus(insights);
-
-  return (
-    <ResidentSectionCard>
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h2 className="text-lg font-semibold text-slate-950">Usage Insights</h2>
-          <p className="mt-1 text-sm text-slate-500">
-            Helpful guidance based on your monthly municipal readings.
-          </p>
-        </div>
-        <span
-          className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${status.className}`}
-        >
-          {status.label}
-        </span>
-      </div>
-
-      {insights.length ? (
-        <div className="mt-4 space-y-4">
-          {insights.map((insight) => (
-            <div
-              key={insight.insight_id}
-              className="rounded-lg border border-slate-200 bg-slate-50 p-4"
-            >
-              <p className="text-sm font-semibold text-slate-900">
-                {residentInsightSummary(insight)}
-              </p>
-              <p className="mt-3 text-xs font-medium uppercase text-slate-500">
-                Recommended next step
-              </p>
-              <p className="mt-1 text-sm text-slate-600">
-                {residentRecommendedStep(insight)}
-              </p>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-3 text-sm text-emerald-800">
-          Your recent water usage appears stable.
-        </p>
-      )}
-    </ResidentSectionCard>
-  );
+function ServiceIcon({ tone, compact = false }: { tone: Tone; compact?: boolean }) {
+  const size = compact ? "h-6 w-6" : "h-9 w-9";
+  return <span className={`grid shrink-0 place-items-center rounded-xl ${size} ${toneClasses[tone]}`}>{tone === "water" ? <DropIcon /> : tone === "electricity" ? <BoltIcon /> : tone === "recycling" ? <RecycleIcon /> : <LeafIcon />}</span>;
 }
 
-function MeterUploadCard({ householdId }: { householdId: string }) {
-  return (
-    <ResidentActionTile
-      href={`/household/${householdId}/meter-upload`}
-      title="Track Daily Water Usage"
-      description="Upload a recent meter photo to monitor consumption between statements."
-      accent="text-teal-800"
-    />
-  );
-}
-
-function WasteSortingCard({ householdId }: { householdId: string }) {
-  return (
-    <ResidentActionTile
-      href={`/household/${householdId}/waste`}
-      title="Waste Sorting Assistant"
-      description="Check whether an item should be recycled, composted, donated, or handled safely."
-      accent="text-emerald-800"
-    />
-  );
-}
-
-function ElectricityTrackingCard({ householdId }: { householdId: string }) {
-  return (
-    <ResidentActionTile
-      href={`/household/${householdId}/electricity`}
-      title="Prepaid Electricity Tracker"
-      description="Record token purchases and monitor estimated electricity usage."
-      accent="text-amber-800"
-    />
-  );
-}
-
-function ResidentTrackingSection({
-  summary,
-  submissions,
-}: {
-  summary: HouseholdTrackingSummary;
-  submissions: MeterSubmissionHistoryItem[];
-}) {
-  return (
-    <section className="space-y-6">
-      <ResidentSectionCard>
-        <h2 className="text-lg font-semibold text-slate-950">
-          Recent Water Tracking
-        </h2>
-        <div className="mt-4 grid grid-cols-2 gap-3">
-          <SummaryMini label="Latest meter reading" value={formatConsumption(summary.latest_reading_kL)} />
-          <SummaryMini label="Latest upload date" value={summary.latest_submission_at ?? "No uploads yet"} />
-          <SummaryMini label="Usage since previous reading" value={formatConsumption(summary.usage_since_previous_reading_kL)} />
-          <SummaryMini label="Estimated daily usage" value={formatConsumption(summary.estimated_daily_usage_kL)} />
-          <SummaryMini label="Validation status" value={submissions[0]?.validation_status ?? "No submissions"} />
-        </div>
-      </ResidentSectionCard>
-      <RecentMeterTrackingChart submissions={submissions} />
-      <ResidentSectionCard>
-        <h2 className="text-lg font-semibold text-slate-950">Meter reading history</h2>
-        <div className="mt-4 space-y-3">
-          {submissions.length ? (
-            submissions.map((submission) => (
-              <article key={submission.submission_id} className="rounded-2xl bg-slate-50 p-4 text-sm">
-                <div className="flex items-start justify-between gap-3">
-                  <p className="font-semibold text-slate-950">{submission.submitted_at}</p>
-                  <span className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-slate-600">
-                    {submission.validation_status}
-                  </span>
-                </div>
-                <dl className="mt-3 space-y-2 text-slate-600">
-                  <CompactRow label="Meter reading" value={formatConsumption(submission.submitted_reading_kL)} />
-                  <CompactRow label="Usage since previous" value={formatConsumption(submission.usage_since_previous_reading_kL)} />
-                  <CompactRow label="Estimated daily usage" value={formatConsumption(submission.estimated_daily_usage_kL)} />
-                </dl>
-              </article>
-            ))
-          ) : (
-            <p className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-500">
-              No household meter photos have been submitted yet.
-            </p>
-          )}
-        </div>
-      </ResidentSectionCard>
-    </section>
-  );
-}
-
-function CompactRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between gap-3">
-      <dt>{label}</dt>
-      <dd className="text-right font-semibold text-slate-900">{value}</dd>
-    </div>
-  );
-}
-
-function SummaryMini({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-lg border border-slate-100 bg-slate-50 p-3">
-      <p className="text-xs font-medium uppercase text-slate-500">{label}</p>
-      <p className="mt-1 break-words text-sm font-semibold text-slate-900">{value}</p>
-    </div>
-  );
-}
+const Svg = ({ children, className = "h-5 w-5" }: { children: ReactNode; className?: string }) => <svg aria-hidden="true" className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{children}</svg>;
+const BellIcon = () => <Svg><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" /></Svg>;
+const ProfileIcon = () => <Svg><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></Svg>;
+const HomeOutline = () => <Svg className="h-4 w-4"><path d="m3 11 9-8 9 8M5 10v10h14V10M10 20v-6h4v6" /></Svg>;
+const PinIcon = () => <Svg className="h-4 w-4"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" /><circle cx="12" cy="10" r="2" /></Svg>;
+const SignalIcon = () => <Svg className="h-8 w-8"><path d="M5 12a7 7 0 0 1 7 7M5 6a13 13 0 0 1 13 13" /><circle cx="5" cy="19" r="1" fill="currentColor" /></Svg>;
+const DropIcon = () => <Svg><path d="M12 2S5 9 5 14a7 7 0 0 0 14 0c0-5-7-12-7-12Z" /></Svg>;
+const BoltIcon = () => <Svg><path d="m13 2-9 12h7l-1 8 9-12h-7l1-8Z" /></Svg>;
+const RecycleIcon = () => <Svg><path d="m7 7 2-4 2 4M9 3h6l2 4m0 10 4-1-2-4m2 4-3 5h-5M6 13l-3 3 3 3m-3-3h6" /></Svg>;
+const LeafIcon = () => <Svg><path d="M20 4C11 4 5 8 5 14c0 4 3 6 6 6 6 0 9-7 9-16Z" /><path d="M4 21c3-6 7-9 12-12" /></Svg>;
+const ShieldIcon = () => <Svg className="h-7 w-7"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" /><path d="m9 12 2 2 4-4" /></Svg>;
+const CheckIcon = () => <Svg className="h-3 w-3"><path d="m5 12 4 4 10-10" /></Svg>;

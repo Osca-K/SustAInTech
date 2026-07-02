@@ -19,7 +19,10 @@ export function ResidentBottomNav({ householdId }: { householdId: string }) {
     {
       label: "Home",
       href: base,
-      active: (value) => value === base,
+      active: (value) =>
+        value === base ||
+        value === `${base}/settings` ||
+        value === `${base}/subscriptions`,
       icon: HomeIcon,
     },
     {
